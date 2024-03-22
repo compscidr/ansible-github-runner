@@ -35,6 +35,18 @@ If the `github_runner_org` variable is true, `github_runner_org_name` must be se
 of the runner. `github_runner_repo` is not used when `github_runner_org` is set. If it is not set,
 the `github_runner_repo` must be set to the `username/repo` that the runner should be used for.
 
+## Usage
+See [playbooks/github-actions.yml](playbooks/github-actions.yml) for an example of how to deploy multiple
+runners at once. There are examples of no java / android, one with java / android, and one which is an org
+runner.
+
 ## Testing
 Using a clean slate vagrant ubuntu vm from the vagrant folder run `vagrant up` and then
 use `vagrant ssh` to get into the machine, then `ansible-playbook playbooks/github_actions.yml`
+
+If changes are made, you can re-run: `ansible-galaxy collection build --force` and
+`ansible-galaxy collection install *tar.gz --force`
+
+## Inspiration
+* https://github.com/macunha1/ansible-github-actions-runner
+* https://github.com/buluma/ansible-collection-roles

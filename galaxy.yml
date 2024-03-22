@@ -3,7 +3,7 @@ namespace: compscidr
 name: github_runner
 authors:
     - Jason Ernst <ernstjason1@gmail.com>
-description: Installs a github self hosted runner within a docker container.
+description: Installs github self hosted repo or org runners within a docker container. Supports multiple runners on a single machine, each in their own container. The runner can be a vanilla runner, or one with java / android installed.
 license_file: 'LICENSE'
 readme: 'README.md'
 version: 0.0.1
