@@ -1,0 +1,5 @@
+---
+- name: Github Runner
+  hosts: localhost
+  roles:
+    - compscidr.github_runner.github_runner

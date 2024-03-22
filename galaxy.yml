@@ -1,0 +1,17 @@
+---
+namespace: compscidr
+name: github_runner
+authors:
+    - Jason Ernst <ernstjason1@gmail.com>
+description: Installs a github self hosted runner within a docker container.
+license_file: 'LICENSE'
+readme: 'README.md'
+version: 0.0.1
+tags:
+    - github
+    - actions
+    - runner
+    - docker
+    - self-hosted
+dependencies:
+    community.docker: "*"

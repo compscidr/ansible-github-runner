@@ -1,0 +1,6 @@
+*.tar.gz
+.sudo_as_admin_successful
+.bash_history
+.cache
+.vagrant
+.ansible

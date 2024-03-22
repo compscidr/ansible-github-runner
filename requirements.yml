@@ -1,0 +1,4 @@
+# from galaxy
+roles:
+  - name: nickjj.docker
+    version: "v2.4.0"

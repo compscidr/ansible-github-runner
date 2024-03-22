@@ -1,0 +1,9 @@
+github_runner_install_docker: true
+github_runner_personal_access_token: insert your token here
+github_runner_name: name your runner
+github_runner_repo: user-name/repo
+
+github_runner_org: false
+github_runner_org_name: org name
+
+github_runner_java: false

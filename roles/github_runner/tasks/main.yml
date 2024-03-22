@@ -1,0 +1,88 @@
+---
+- name: Ensure docker is installed on the target system
+  tags: docker
+  ansible.builtin.include_role:
+    name: nickjj.docker
+    apply:
+      become: true # without this, it will end up failing and retrying over and over to install deps
+  when: github_runner_install_docker
+  
+- name: Deploy Github Android Repository Runner
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: compscidr/github-runner-android:latest
+    pull: true
+    volumes:
+      - "/dev/bus/usb:/dev/bus/usb"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/root/.android:/root/.android"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "self-hosted"
+      HOST_NAME: "{{ inventory_hostname }}"
+      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+  when: (not github_runner_org) and github_runner_java
+
+- name: Deploy Github Android Organization Runner
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: compscidr/github-runner-android:latest
+    pull: true
+    volumes:
+      - "/dev/bus/usb:/dev/bus/usb"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/root/.android:/root/.android"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "self-hosted"
+      HOST_NAME: "{{ inventory_hostname }}"
+      ORG_NAME: "{{ github_runner_org_name }}"
+  when: github_runner_org and github_runner_java
+
+- name: Deploy Github Repository Runner
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: myoung34/github-runner:latest
+    pull: true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "self-hosted"
+      HOST_NAME: "{{ inventory_hostname }}"
+      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+  when: (not github_runner_org) and (not github_runner_java)
+
+- name: Deploy Github Organization Runner
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: myoung34/github-runner:latest
+    pull: true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "self-hosted"
+      HOST_NAME: "{{ inventory_hostname }}"
+      ORG_NAME: "{{ github_runner_org_name }}"
+  when: github_runner_org and github_runner_java
