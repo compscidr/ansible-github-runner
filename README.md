@@ -48,5 +48,5 @@ If changes are made, you can re-run: `ansible-galaxy collection build --force` a
 `ansible-galaxy collection install *tar.gz --force`
 
 ## Inspiration
-* https://github.com/macunha1/ansible-github-actions-runner
-* https://github.com/buluma/ansible-collection-roles
+* [https://github.com/macunha1/ansible-github-actions-runner](https://github.com/macunha1/ansible-github-actions-runner)
+* [https://github.com/buluma/ansible-collection-roles](https://github.com/buluma/ansible-collection-roles)
