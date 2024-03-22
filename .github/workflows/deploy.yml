@@ -1,5 +1,5 @@
 ---
-name: Galaxy-NG Roles Import
+name: Galaxy-NG Collection Import
 
 # yamllint disable-line rule:truthy
 on:
