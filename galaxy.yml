@@ -7,6 +7,7 @@ description: Installs github self hosted repo or org runners within a docker con
 license_file: 'LICENSE'
 readme: 'README.md'
 version: 0.0.1
+repository: https://github.com/compscidr/ansible-github-runner
 tags:
     - github
     - actions
