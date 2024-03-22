@@ -13,6 +13,6 @@ tags:
     - actions
     - runner
     - docker
-    - self-hosted
+    - hosted
 dependencies:
     community.docker: "*"
