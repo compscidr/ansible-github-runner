@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Galaxy Role Importer
+    name: Galaxy Collection Importer
     runs-on: ubuntu-latest
 
     steps:
@@ -21,4 +21,4 @@ jobs:
       - name: 'Release on galaxy'
         uses: ansible/ansible-publish-action@v1.0.0
         with:
-          galaxy_api_key: ${{ secrets.galaxy_api_key }}
+          api_key: ${{ secrets.galaxy_api_key }}
