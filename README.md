@@ -5,9 +5,9 @@ This is done so we don't need to recreate the work done for
 downloading, installing, configuring and running the runner
 as a deamon directly on the host system.
 
-We make use of: https://github.com/myoung34/docker-github-actions-runner
-for a runner without android, or https://github.com/compscidr/docker-github-actions-runner-android
-for a runner with android.
+We make use of: [https://github.com/myoung34/docker-github-actions-runner](https://github.com/myoung34/docker-github-actions-runner)
+for a runner without java / android, or [https://github.com/compscidr/docker-github-actions-runner-android](https://github.com/compscidr/docker-github-actions-runner-android)
+for a runner with java / android.
 
 This is a collection instead of a role because it has a collection
 dependency on the ansible community docker collection in order
