@@ -1,4 +1,3 @@
----
 galaxy_info:
   author: Jason Ernst
   role_name: github_runner
@@ -20,6 +19,4 @@ galaxy_info:
     - docker
     - hosted
 dependencies:
-  - src: nickjj.docker
-    version: v2.4.0
-    name: nickjj.docker
+  - nickjj.docker: "v2.4.0"
