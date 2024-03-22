@@ -46,6 +46,7 @@
       RUNNER_NAME_PREFIX: github_runner_name
       LABELS: "self-hosted"
       HOST_NAME: "{{ inventory_hostname }}"
+      RUNNER_SCOPE: "org"
       ORG_NAME: "{{ github_runner_org_name }}"
   when: github_runner_org and github_runner_java
 
@@ -83,6 +84,7 @@
       DISABLE_AUTO_UPDATE: "true"
       RUNNER_NAME_PREFIX: github_runner_name
       LABELS: "self-hosted"
+      RUNNER_SCOPE: "org"
       HOST_NAME: "{{ inventory_hostname }}"
       ORG_NAME: "{{ github_runner_org_name }}"
   when: github_runner_org and (not github_runner_java)
