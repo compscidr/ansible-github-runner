@@ -14,8 +14,9 @@
     name: "{{ github_runner_name }}"
     image: compscidr/github-runner-android:latest
     pull: true
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb:rwm"
     volumes:
-      - "/dev/bus/usb:/dev/bus/usb"
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
@@ -35,8 +36,9 @@
     name: "{{ github_runner_name }}"
     image: compscidr/github-runner-android:latest
     pull: true
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb:rwm"
     volumes:
-      - "/dev/bus/usb:/dev/bus/usb"
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
