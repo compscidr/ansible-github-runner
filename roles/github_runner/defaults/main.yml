@@ -3,6 +3,8 @@ github_runner_personal_access_token: insert your token here
 github_runner_name: name your runner
 github_runner_repo: user-name/repo
 
+github_runner_labels: self-hosted
+
 github_runner_org: false
 github_runner_org_name: org name
 
