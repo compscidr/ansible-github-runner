@@ -9,3 +9,4 @@ github_runner_org: false
 github_runner_org_name: org name
 
 github_runner_java: false
+github_runner_java_mount_usb: false
