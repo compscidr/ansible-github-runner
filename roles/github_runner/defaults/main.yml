@@ -12,3 +12,6 @@ github_runner_java: false
 github_runner_java_mount_usb: false
 github_runner_java_image: compscidr/github-runner-android:latest
 github_runner_non_java_image: myoung34/github-runner:latest
+
+github_runner_env_file: false
+github_runner_env_filename: ".env"

@@ -6,8 +6,8 @@
     apply:
       become: true # without this, it will end up failing and retrying over and over to install deps
   when: github_runner_install_docker
-  
-- name: Deploy Github Java / Android Repository Runner with USB mount
+
+- name: Deploy Github Java / Android Repository Runner with USB mount no env file
   tags: github_runner
   become: true
   docker_container:
@@ -27,9 +27,32 @@
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
       REPO_URL: "https://github.com/{{ github_runner_repo }}"
-  when: (not github_runner_org) and github_runner_java and github_runner_java_mount_usb
+  when: (not github_runner_org) and github_runner_java and github_runner_java_mount_usb and (not github_runner_env_file)
 
-- name: Deploy Github Java / Android Repository Runner without USB mount
+- name: Deploy Github Java / Android Repository Runner with USB mount and env file
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: "{{ github_runner_java_image }}"
+    pull: true
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb:rwm"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/root/.android:/root/.android"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "{{ github_runner_labels }}"
+      HOST_NAME: "{{ inventory_hostname }}"
+      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+    env_file: "{{ github_runner_env_filename }}"
+  when: (not github_runner_org) and github_runner_java and github_runner_java_mount_usb and github_runner_env_file
+
+- name: Deploy Github Java / Android Repository Runner without USB mount no env file
   tags: github_runner
   become: true
   docker_container:
@@ -47,9 +70,30 @@
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
       REPO_URL: "https://github.com/{{ github_runner_repo }}"
-  when: (not github_runner_org) and github_runner_java and (not github_runner_java_mount_usb)
+  when: (not github_runner_org) and github_runner_java and (not github_runner_java_mount_usb) and (not github_runner_env_file)
 
-- name: Deploy Github Java / Android Organization Runner with USB mount
+- name: Deploy Github Java / Android Repository Runner without USB mount and env file
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: "{{ github_runner_java_image }}"
+    pull: true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/root/.android:/root/.android"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "{{ github_runner_labels }}"
+      HOST_NAME: "{{ inventory_hostname }}"
+      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+    env_file: "{{ github_runner_env_filename }}"
+  when: (not github_runner_org) and github_runner_java and (not github_runner_java_mount_usb) and github_runner_env_file
+
+- name: Deploy Github Java / Android Organization Runner with USB mount no env file
   tags: github_runner
   become: true
   docker_container:
@@ -70,9 +114,33 @@
       HOST_NAME: "{{ inventory_hostname }}"
       RUNNER_SCOPE: "org"
       ORG_NAME: "{{ github_runner_org_name }}"
-  when: github_runner_org and github_runner_java and github_runner_java_mount_usb
+  when: github_runner_org and github_runner_java and github_runner_java_mount_usb and (not github_runner_env_file)
 
-- name: Deploy Github Java / Android Organization Runner without USB mount
+- name: Deploy Github Java / Android Organization Runner with USB mount and env file
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: "{{ github_runner_java_image }}"
+    pull: true
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb:rwm"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/root/.android:/root/.android"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "{{ github_runner_labels }}"
+      HOST_NAME: "{{ inventory_hostname }}"
+      RUNNER_SCOPE: "org"
+      ORG_NAME: "{{ github_runner_org_name }}"
+    env_file: "{{ github_runner_env_filename }}"
+  when: github_runner_org and github_runner_java and github_runner_java_mount_usb and github_runner_env_file
+
+- name: Deploy Github Java / Android Organization Runner without USB mount no env file
   tags: github_runner
   become: true
   docker_container:
@@ -91,9 +159,31 @@
       HOST_NAME: "{{ inventory_hostname }}"
       RUNNER_SCOPE: "org"
       ORG_NAME: "{{ github_runner_org_name }}"
-  when: github_runner_org and github_runner_java and (not github_runner_java_mount_usb)
+  when: github_runner_org and github_runner_java and (not github_runner_java_mount_usb) and (not github_runner_env_file)
 
-- name: Deploy Github Repository Runner
+- name: Deploy Github Java / Android Organization Runner without USB mount and env file
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: "{{ github_runner_java_image }}"
+    pull: true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/root/.android:/root/.android"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "{{ github_runner_labels }}"
+      HOST_NAME: "{{ inventory_hostname }}"
+      RUNNER_SCOPE: "org"
+      ORG_NAME: "{{ github_runner_org_name }}"
+    env_file: "{{ github_runner_env_filename }}"
+  when: github_runner_org and github_runner_java and (not github_runner_java_mount_usb) and github_runner_env_file
+
+- name: Deploy Github Repository Runner no env file
   tags: github_runner
   become: true
   docker_container:
@@ -110,9 +200,29 @@
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
       REPO_URL: "https://github.com/{{ github_runner_repo }}"
-  when: (not github_runner_org) and (not github_runner_java)
+  when: (not github_runner_org) and (not github_runner_java) and (not github_runner_env_file)
 
-- name: Deploy Github Organization Runner
+- name: Deploy Github Repository Runner and env file
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: "{{ github_runner_non_java_image }}"
+    pull: true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "{{ github_runner_labels }}"
+      HOST_NAME: "{{ inventory_hostname }}"
+      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+    env_file: "{{ github_runner_env_filename }}"
+  when: (not github_runner_org) and (not github_runner_java) and github_runner_env_file
+
+- name: Deploy Github Organization Runner no env file
   tags: github_runner
   become: true
   docker_container:
@@ -130,4 +240,25 @@
       RUNNER_SCOPE: "org"
       HOST_NAME: "{{ inventory_hostname }}"
       ORG_NAME: "{{ github_runner_org_name }}"
-  when: github_runner_org and (not github_runner_java)
+  when: github_runner_org and (not github_runner_java) and (not github_runner_env_file)
+
+- name: Deploy Github Organization Runner and env file
+  tags: github_runner
+  become: true
+  docker_container:
+    name: "{{ github_runner_name }}"
+    image: "{{ github_runner_non_java_image }}"
+    pull: true
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart_policy: unless-stopped
+    env:
+      ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
+      DISABLE_AUTO_UPDATE: "true"
+      RUNNER_NAME_PREFIX: github_runner_name
+      LABELS: "{{ github_runner_labels }}"
+      RUNNER_SCOPE: "org"
+      HOST_NAME: "{{ inventory_hostname }}"
+      ORG_NAME: "{{ github_runner_org_name }}"
+    env_file: "{{ github_runner_env_filename }}"
+  when: github_runner_org and (not github_runner_java) and github_runner_env_file
