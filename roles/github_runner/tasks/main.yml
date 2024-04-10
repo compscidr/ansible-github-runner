@@ -12,7 +12,7 @@
   become: true
   docker_container:
     name: "{{ github_runner_name }}"
-    image: compscidr/github-runner-android:latest
+    image: "{{ github_runner_java_image }}"
     pull: true
     devices:
       - "/dev/bus/usb:/dev/bus/usb:rwm"
@@ -34,7 +34,7 @@
   become: true
   docker_container:
     name: "{{ github_runner_name }}"
-    image: compscidr/github-runner-android:latest
+    image: "{{ github_runner_java_image }}"
     pull: true
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -54,7 +54,7 @@
   become: true
   docker_container:
     name: "{{ github_runner_name }}"
-    image: compscidr/github-runner-android:latest
+    image: "{{ github_runner_java_image }}"
     pull: true
     devices:
       - "/dev/bus/usb:/dev/bus/usb:rwm"
@@ -77,7 +77,7 @@
   become: true
   docker_container:
     name: "{{ github_runner_name }}"
-    image: compscidr/github-runner-android:latest
+    image: "{{ github_runner_java_image }}"
     pull: true
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -98,7 +98,7 @@
   become: true
   docker_container:
     name: "{{ github_runner_name }}"
-    image: myoung34/github-runner:latest
+    image: "{{ github_runner_non_java_image }}"
     pull: true
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -117,7 +117,7 @@
   become: true
   docker_container:
     name: "{{ github_runner_name }}"
-    image: myoung34/github-runner:latest
+    image: "{{ github_runner_non_java_image }}"
     pull: true
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
