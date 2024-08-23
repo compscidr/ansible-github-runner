@@ -20,6 +20,8 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
+    ports:
+      - "{{ github_runner_adb_port }}:5037"
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
@@ -42,6 +44,8 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
+    ports:
+      - "{{ github_runner_adb_port }}:5037"
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
@@ -63,6 +67,8 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
+    ports:
+      - "{{ github_runner_adb_port }}:5037"
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
@@ -83,6 +89,8 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
+    ports:
+      - "{{ github_runner_adb_port }}:5037"
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
@@ -106,6 +114,8 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
+    ports:
+      - "{{ github_runner_adb_port }}:5037"
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
@@ -129,6 +139,8 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
+    ports:
+      - "{{ github_runner_adb_port }}:5037"
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
@@ -151,6 +163,8 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
+    ports:
+      - "{{ github_runner_adb_port }}:5037"
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
@@ -172,6 +186,8 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
     restart_policy: unless-stopped
+    ports:
+      - "{{ github_runner_adb_port }}:5037"
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"

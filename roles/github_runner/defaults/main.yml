@@ -15,3 +15,5 @@ github_runner_non_java_image: myoung34/github-runner:latest
 
 github_runner_env_file: false
 github_runner_env_filename: ".env"
+
+github_runner_adb_port: 5037
