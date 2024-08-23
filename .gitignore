@@ -4,3 +4,4 @@
 .cache
 .vagrant
 .ansible
+.idea
