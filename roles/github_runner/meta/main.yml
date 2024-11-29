@@ -1,11 +1,12 @@
 galaxy_info:
   author: Jason Ernst
   role_name: github_runner
-  description: Installs github self hosted repo or org runners within a docker container. Supports multiple runners on a single machine, each in their own container. The runner can be a vanilla runner, or one with java / android installed.
-  company: 
+  description: "Installs github self hosted repo or org runners within a docker container.
+    Supports multiple runners on a single machine, each in their own container. The runner
+    can be a vanilla runner, or one with java / android installed."
+  company: ''
   license: GPLv3
-  min_ansible_version: 2.4
-  readme: roles/github_runner/README.md
+  min_ansible_version: "2.4"
   platforms:
     - name: Ubuntu
       versions:
@@ -18,5 +19,4 @@ galaxy_info:
     - runner
     - docker
     - hosted
-  dependencies:
-    - nickjj.docker: "v2.4.0"
+    - infrastructure

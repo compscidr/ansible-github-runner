@@ -1,4 +1,3 @@
-# from galaxy
-roles:
-  - name: nickjj.docker
-    version: "v2.5.0"
+collections:
+  - name: community.docker
+    version: "4.1.0"

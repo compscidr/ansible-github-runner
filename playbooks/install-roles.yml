@@ -1,6 +1,0 @@
----
-- hosts: localhost
-
-  tasks:
-    - local_action:
-        command ansible-galaxy install -r ../requirements.yml

@@ -10,7 +10,7 @@
 - name: Deploy Github Java / Android Repository Runner with USB mount no env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_java_image }}"
     pull: true
@@ -34,7 +34,7 @@
 - name: Deploy Github Java / Android Repository Runner with USB mount and env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_java_image }}"
     pull: true
@@ -59,7 +59,7 @@
 - name: Deploy Github Java / Android Repository Runner without USB mount no env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_java_image }}"
     pull: true
@@ -81,7 +81,7 @@
 - name: Deploy Github Java / Android Repository Runner without USB mount and env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_java_image }}"
     pull: true
@@ -104,7 +104,7 @@
 - name: Deploy Github Java / Android Organization Runner with USB mount no env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_java_image }}"
     pull: true
@@ -129,7 +129,7 @@
 - name: Deploy Github Java / Android Organization Runner with USB mount and env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_java_image }}"
     pull: true
@@ -155,7 +155,7 @@
 - name: Deploy Github Java / Android Organization Runner without USB mount no env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_java_image }}"
     pull: true
@@ -178,7 +178,7 @@
 - name: Deploy Github Java / Android Organization Runner without USB mount and env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_java_image }}"
     pull: true
@@ -202,7 +202,7 @@
 - name: Deploy Github Repository Runner no env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_non_java_image }}"
     pull: true
@@ -221,7 +221,7 @@
 - name: Deploy Github Repository Runner and env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_non_java_image }}"
     pull: true
@@ -241,7 +241,7 @@
 - name: Deploy Github Organization Runner no env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_non_java_image }}"
     pull: true
@@ -261,7 +261,7 @@
 - name: Deploy Github Organization Runner and env file
   tags: github_runner
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_non_java_image }}"
     pull: true
