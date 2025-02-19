@@ -25,10 +25,10 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
-      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+      REPO_URL: "https://{{ github_runner_github_host }}/{{ github_runner_repo }}"
       GITHUB_HOST: "{{ github_runner_github_host }}"
   when: (not github_runner_org) and github_runner_java and github_runner_java_mount_usb and (not github_runner_env_file)
 
@@ -50,10 +50,10 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
-      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+      REPO_URL: "https://{{ github_runner_github_host }}/{{ github_runner_repo }}"
       GITHUB_HOST: "{{ github_runner_github_host }}"
     env_file: "{{ github_runner_env_filename }}"
   when: (not github_runner_org) and github_runner_java and github_runner_java_mount_usb and github_runner_env_file
@@ -74,10 +74,10 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
-      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+      REPO_URL: "https://{{ github_runner_github_host }}/{{ github_runner_repo }}"
       GITHUB_HOST: "{{ github_runner_github_host }}"
   when: (not github_runner_org) and github_runner_java and (not github_runner_java_mount_usb) and (not github_runner_env_file)
 
@@ -97,10 +97,10 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
-      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+      REPO_URL: "https://{{ github_runner_github_host }}/{{ github_runner_repo }}"
       GITHUB_HOST: "{{ github_runner_github_host }}"
     env_file: "{{ github_runner_env_filename }}"
   when: (not github_runner_org) and github_runner_java and (not github_runner_java_mount_usb) and github_runner_env_file
@@ -123,7 +123,7 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
       RUNNER_SCOPE: "org"
@@ -149,7 +149,7 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
       RUNNER_SCOPE: "org"
@@ -174,7 +174,7 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
       RUNNER_SCOPE: "org"
@@ -198,7 +198,7 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
       RUNNER_SCOPE: "org"
@@ -220,10 +220,10 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
-      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+      REPO_URL: "https://{{ github_runner_github_host }}/{{ github_runner_repo }}"
       GITHUB_HOST: "{{ github_runner_github_host }}"
   when: (not github_runner_org) and (not github_runner_java) and (not github_runner_env_file)
 
@@ -240,10 +240,10 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       HOST_NAME: "{{ inventory_hostname }}"
-      REPO_URL: "https://github.com/{{ github_runner_repo }}"
+      REPO_URL: "https://{{ github_runner_github_host }}/{{ github_runner_repo }}"
       GITHUB_HOST: "{{ github_runner_github_host }}"
     env_file: "{{ github_runner_env_filename }}"
   when: (not github_runner_org) and (not github_runner_java) and github_runner_env_file
@@ -261,7 +261,7 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       RUNNER_SCOPE: "org"
       HOST_NAME: "{{ inventory_hostname }}"
@@ -282,7 +282,7 @@
     env:
       ACCESS_TOKEN: "{{ github_runner_personal_access_token }}"
       DISABLE_AUTO_UPDATE: "true"
-      RUNNER_NAME_PREFIX: github_runner_name
+      RUNNER_NAME_PREFIX: "{{ github_runner_name }}"
       LABELS: "{{ github_runner_labels }}"
       RUNNER_SCOPE: "org"
       HOST_NAME: "{{ inventory_hostname }}"
