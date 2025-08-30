@@ -1,17 +1,18 @@
 ---
 - name: Verify
   hosts: all
-  gather_facts: false
+  gather_facts: true
   tasks:
-    - name: Test that role has the required variables defined
+    - name: Verify role variables are defined
       ansible.builtin.assert:
         that:
           - github_runner_name is defined
-          - github_runner_repo is defined
+          - github_runner_repo is defined  
           - github_runner_personal_access_token is defined
-        fail_msg: "Required variables are not defined"
-        success_msg: "All required variables are properly defined"
+          - github_runner_labels is defined
+        fail_msg: "Required role variables are not properly defined"
+        success_msg: "All required role variables are properly defined"
 
-    - name: Test role execution completed without errors
+    - name: Test role execution completed
       ansible.builtin.debug:
-        msg: "GitHub Runner role verification completed successfully"
+        msg: "GitHub Runner role molecule testing completed successfully"
