@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: Test the github_runner role with minimal docker setup
+      ansible.builtin.include_role:
+        name: github_runner
+      vars:
+        github_runner_install_docker: false  # Skip docker installation in tests
+        github_runner_personal_access_token: "fake_token_for_testing"
+        github_runner_name: "test-runner"
+        github_runner_repo: "test-user/test-repo"
+        github_runner_labels: "self-hosted,test"
+        github_runner_java: false
