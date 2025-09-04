@@ -1,8 +1,9 @@
 ---
 - name: Converge
   hosts: all
+  gather_facts: true
   tasks:
-    - name: Test github_runner role syntax and basic functionality
+    - name: Test github_runner role syntax and variable processing in check mode
       ansible.builtin.include_role:
         name: github_runner
       vars:
@@ -13,6 +14,8 @@
         github_runner_labels: "self-hosted,test"
         github_runner_java: false
         github_runner_org: false
+        github_runner_env_file: false
+        github_runner_github_host: "github.com"
+        github_runner_non_java_image: "myoung34/github-runner:latest"
+      check_mode: true  # Run in check mode to validate syntax without execution
       tags: molecule-converge
-      # Use check mode to validate syntax without actually creating containers
-      when: not (ansible_check_mode | default(false))

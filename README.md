@@ -82,19 +82,30 @@ where the runner container is located.
 ## Testing
 This collection uses [Molecule](https://molecule.readthedocs.io/) for testing with Docker containers.
 
-To run the tests locally:
+### Local Testing (when galaxy.ansible.com is accessible)
 ```bash
 # Install testing dependencies
-pip install molecule molecule-plugins[docker] ansible-lint
+pip install -r requirements-dev.txt
+
+# Install required collections
+ansible-galaxy collection install -r requirements.yml
 
 # Run the complete test suite
 molecule test
 ```
 
 The tests will:
-- Spin up a Docker container with Ubuntu 22.04
+- Spin up a Docker container with Ubuntu 24.04 (using geerlingguy's ansible-enabled image)
 - Run the `github_runner` role with test configuration
 - Verify the role executes without errors
+
+### Current CI Limitation
+**Note:** Molecule tests are currently disabled in CI due to network restrictions preventing installation of the required `community.docker` collection from galaxy.ansible.com. The CI currently runs ansible-lint for syntax validation.
+
+To run basic syntax validation:
+```bash
+ansible-lint roles/
+```
 
 ## Inspiration
 * [https://github.com/macunha1/ansible-github-actions-runner](https://github.com/macunha1/ansible-github-actions-runner)
