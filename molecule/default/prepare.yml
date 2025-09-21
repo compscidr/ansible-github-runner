@@ -1,0 +1,20 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Update package cache (Ubuntu/Debian)
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
+      become: true
+      when: ansible_os_family == 'Debian'
+
+    - name: Install Python packages required for community.docker (Ubuntu/Debian)
+      ansible.builtin.package:
+        name:
+          - python3-requests
+          - python3-docker
+        state: present
+      become: true
+      when: ansible_os_family == 'Debian'

@@ -7,7 +7,7 @@
       ansible.builtin.assert:
         that:
           - github_runner_name is defined
-          - github_runner_repo is defined  
+          - github_runner_repo is defined
           - github_runner_personal_access_token is defined
           - github_runner_labels is defined
         fail_msg: "Required role variables are not properly defined"
