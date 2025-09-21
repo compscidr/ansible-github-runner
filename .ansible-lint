@@ -2,6 +2,6 @@
 exclude_paths:
   - .github/
   - .molecule/
-offline: true
+offline: false
 skip_list:
   - galaxy[no-changelog]
