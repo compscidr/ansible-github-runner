@@ -10,11 +10,27 @@
       become: true
       when: ansible_os_family == 'Debian'
 
-    - name: Install Python packages required for community.docker (Ubuntu/Debian)
+    - name: Install Docker CLI and Python packages required for community.docker (Ubuntu/Debian)
       ansible.builtin.package:
         name:
+          - docker.io
           - python3-requests
           - python3-docker
         state: present
+      become: true
+      when: ansible_os_family == 'Debian'
+
+    - name: Ensure docker group exists
+      ansible.builtin.group:
+        name: docker
+        state: present
+      become: true
+      when: ansible_os_family == 'Debian'
+
+    - name: Add ansible user to docker group
+      ansible.builtin.user:
+        name: "{{ ansible_user_id }}"
+        groups: docker
+        append: true
       become: true
       when: ansible_os_family == 'Debian'

@@ -11,6 +11,7 @@ platforms:
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/run/docker.sock:/var/run/docker.sock:rw  # Mount Docker socket for Docker-in-Docker
     cgroupns_mode: host
     capabilities:
       - SYS_ADMIN
@@ -29,7 +30,5 @@ provisioner:
       callbacks_enabled: profile_tasks
   playbooks:
     converge: converge.yml
-  options:
-    C: true  # Short form of --check flag
 verifier:
   name: ansible
