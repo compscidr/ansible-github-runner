@@ -27,7 +27,9 @@ provisioner:
   config_options:
     defaults:
       callbacks_enabled: profile_tasks
+  playbooks:
+    converge: converge.yml
   options:
-    check: true  # Run converge in check mode to avoid Docker-in-Docker issues
+    C: true  # Short form of --check flag
 verifier:
   name: ansible
