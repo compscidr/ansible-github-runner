@@ -24,5 +24,10 @@ provisioner:
     host_vars:
       instance:
         ansible_python_interpreter: /usr/bin/python3
+  config_options:
+    defaults:
+      callbacks_enabled: profile_tasks
+  options:
+    check: true  # Run converge in check mode to avoid Docker-in-Docker issues
 verifier:
   name: ansible
