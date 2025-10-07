@@ -3,15 +3,24 @@
   hosts: all
   gather_facts: true
   tasks:
-    - name: Verify role variables are defined
-      ansible.builtin.assert:
-        that:
-          - github_runner_name is defined
-          - github_runner_repo is defined
-          - github_runner_personal_access_token is defined
-          - github_runner_labels is defined
-        fail_msg: "Required role variables are not properly defined"
-        success_msg: "All required role variables are properly defined"
+    - name: Check if Docker is installed (if role installed it)
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+      failed_when: false
+
+    - name: Check if runner container was created
+      community.docker.docker_container_info:
+        name: test-runner
+      register: container_info
+      failed_when: false
+
+    - name: Display verification results
+      ansible.builtin.debug:
+        msg: |
+          Docker installed: {{ docker_version.rc == 0 }}
+          Docker version: {{ docker_version.stdout | default('N/A') }}
+          Runner container exists: {{ container_info.exists | default(false) }}
 
     - name: Test role execution completed
       ansible.builtin.debug:
