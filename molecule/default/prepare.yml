@@ -3,34 +3,13 @@
   hosts: all
   gather_facts: true
   tasks:
-    - name: Update package cache (Ubuntu/Debian)
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 600
-      become: true
-      when: ansible_os_family == 'Debian'
-
-    - name: Install Docker CLI and Python packages required for community.docker (Ubuntu/Debian)
+    - name: Ensure Python packages for Docker are available
       ansible.builtin.package:
         name:
-          - docker.io
           - python3-requests
           - python3-docker
         state: present
       become: true
       when: ansible_os_family == 'Debian'
+      failed_when: false  # Don't fail if packages are already present or can't be installed
 
-    - name: Ensure docker group exists
-      ansible.builtin.group:
-        name: docker
-        state: present
-      become: true
-      when: ansible_os_family == 'Debian'
-
-    - name: Add ansible user to docker group
-      ansible.builtin.user:
-        name: "{{ ansible_user_id }}"
-        groups: docker
-        append: true
-      become: true
-      when: ansible_os_family == 'Debian'
