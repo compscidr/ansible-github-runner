@@ -5,3 +5,7 @@
 .vagrant
 .ansible
 .idea
+
+# Molecule
+.molecule/
+__pycache__/

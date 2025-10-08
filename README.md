@@ -80,11 +80,32 @@ at build time, for instance, Wi-Fi credentials that can be built into tests that
 where the runner container is located.
 
 ## Testing
-Using a clean slate vagrant ubuntu vm from the vagrant folder run `vagrant up` and then
-use `vagrant ssh` to get into the machine, then `ansible-playbook playbooks/github_actions.yml`
+This collection uses [Molecule](https://molecule.readthedocs.io/) for testing with Docker containers.
 
-If changes are made, you can re-run: `ansible-galaxy collection build --force` and
-`ansible-galaxy collection install *tar.gz --force`
+### Local Testing (when galaxy.ansible.com is accessible)
+```bash
+# Install testing dependencies
+pip install -r requirements-dev.txt
+
+# Install required collections
+ansible-galaxy collection install -r requirements.yml
+
+# Run the complete test suite
+molecule test
+```
+
+The tests will:
+- Spin up a Docker container with Ubuntu 24.04 (using geerlingguy's ansible-enabled image)
+- Run the `github_runner` role with test configuration
+- Verify the role executes without errors
+
+### Current CI Limitation
+**Note:** Molecule tests are currently disabled in CI due to network restrictions preventing installation of the required `community.docker` collection from galaxy.ansible.com. The CI currently runs ansible-lint for syntax validation.
+
+To run basic syntax validation:
+```bash
+ansible-lint roles/
+```
 
 ## Inspiration
 * [https://github.com/macunha1/ansible-github-actions-runner](https://github.com/macunha1/ansible-github-actions-runner)

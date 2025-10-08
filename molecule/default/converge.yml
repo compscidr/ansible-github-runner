@@ -1,0 +1,20 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Test github_runner role syntax and variable processing
+      ansible.builtin.include_role:
+        name: github_runner
+      vars:
+        github_runner_install_docker: false  # Skip docker installation
+        github_runner_personal_access_token: "fake_token_for_testing"
+        github_runner_name: "test-runner"
+        github_runner_repo: "test-user/test-repo"
+        github_runner_labels: "self-hosted,test"
+        github_runner_java: false
+        github_runner_org: false
+        github_runner_env_file: false
+        github_runner_github_host: "github.com"
+        github_runner_non_java_image: "myoung34/github-runner:latest"
+      tags: molecule-converge

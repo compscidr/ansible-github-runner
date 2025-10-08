@@ -1,17 +1,62 @@
-name: ansible-lint
-on: [push, pull_request]
+---
+name: Test
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: 
+      - main
+    tags:
+      - 'v*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false  # Don't cancel in-progress runs to allow tests to complete
 
 jobs:
-  build:
-    name: Ansible Lint # Naming the build is important to use it as a status check
+  lint:
+    name: Ansible Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main
-        # optional (see below):
         with:
           args: ""
-          setup_python: "true"
+          setup_python: true
           working_directory: ""
           requirements_file: ""
+
+  molecule:
+    name: Molecule Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Install Ansible collections (before firewall is enabled)
+        run: |
+          # Requires firewall exceptions for:
+          # - galaxy.ansible.com
+          # - ansible-galaxy-ng.s3.dualstack.us-east-1.amazonaws.com
+          echo "Installing collections with verbose output..."
+          ansible-galaxy collection install -r requirements.yml -vvv
+
+      - name: Start Docker daemon
+        run: |
+          sudo systemctl start docker
+          sudo chmod 666 /var/run/docker.sock
+
+      - name: Run Molecule tests
+        run: molecule test
+        env:
+          MOLECULE_NO_LOG: false

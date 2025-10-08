@@ -1,0 +1,22 @@
+---
+dependency:
+  name: galaxy
+  enabled: false
+driver:
+  name: default
+platforms:
+  - name: instance
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      instance:
+        ansible_connection: local
+        ansible_python_interpreter: /usr/bin/python3
+  config_options:
+    defaults:
+      callbacks_enabled: profile_tasks
+  playbooks:
+    converge: converge.yml
+verifier:
+  name: ansible

@@ -1,0 +1,14 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Ensure Python packages for Docker are available
+      ansible.builtin.package:
+        name:
+          - python3-requests
+          - python3-docker
+        state: present
+      become: true
+      when: ansible_os_family == 'Debian'
+      failed_when: false  # Don't fail if packages are already present or can't be installed

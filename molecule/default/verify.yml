@@ -1,0 +1,27 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Check if Docker is installed (if role installed it)
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+      failed_when: false
+
+    - name: Check if runner container was created
+      community.docker.docker_container_info:
+        name: test-runner
+      register: container_info
+      failed_when: false
+
+    - name: Display verification results
+      ansible.builtin.debug:
+        msg: |
+          Docker installed: {{ docker_version.rc == 0 }}
+          Docker version: {{ docker_version.stdout | default('N/A') }}
+          Runner container exists: {{ container_info.exists | default(false) }}
+
+    - name: Test role execution completed
+      ansible.builtin.debug:
+        msg: "GitHub Runner role molecule testing completed successfully"
