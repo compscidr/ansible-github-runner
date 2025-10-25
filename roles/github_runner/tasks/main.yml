@@ -16,6 +16,8 @@
     pull: true
     devices:
       - "/dev/bus/usb:/dev/bus/usb:rwm"
+    device_cgroup_rules:
+      - "c 189:* rmw"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
@@ -41,6 +43,8 @@
     pull: true
     devices:
       - "/dev/bus/usb:/dev/bus/usb:rwm"
+    device_cgroup_rules:
+      - "c 189:* rmw"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
@@ -114,6 +118,8 @@
     pull: true
     devices:
       - "/dev/bus/usb:/dev/bus/usb:rwm"
+    device_cgroup_rules:
+      - "c 189:* rmw"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
@@ -140,6 +146,8 @@
     pull: true
     devices:
       - "/dev/bus/usb:/dev/bus/usb:rwm"
+    device_cgroup_rules:
+      - "c 189:* rmw"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/root/.android:/root/.android"
