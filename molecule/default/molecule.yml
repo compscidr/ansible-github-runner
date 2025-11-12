@@ -1,0 +1,50 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+driver:
+  name: docker
+lint: |
+  set -e
+  yamllint .
+  ansible-lint
+platforms:
+  - name: ubuntu-22.04
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    command: ""
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+  - name: ubuntu-24.04
+    image: geerlingguy/docker-ubuntu2404-ansible:latest
+    command: ""
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/roles
+  playbooks:
+    prepare: prepare.yml
+    converge: converge.yml
+    verify: verify.yml
+  inventory:
+    host_vars:
+      ubuntu-22.04:
+        github_runner_personal_access_token: "test-token-22"
+        github_runner_name: "test-runner-22"
+        github_runner_repo: "test/repo"
+        github_runner_labels: "self-hosted,test"
+      ubuntu-24.04:
+        github_runner_personal_access_token: "test-token-24"
+        github_runner_name: "test-runner-24"
+        github_runner_repo: "test/repo"
+        github_runner_labels: "self-hosted,test"
+verifier:
+  name: ansible

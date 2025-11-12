@@ -1,0 +1,10 @@
+---
+- name: Deploy GitHub Runner
+  hosts: all
+  become: true
+  roles:
+    - role: roles/github_runner
+      vars:
+        github_runner_personal_access_token: "{{ github_runner_personal_access_token | default('your-token-here') }}"
+        github_runner_name: "{{ github_runner_name | default('my-runner') }}"
+        github_runner_repo: "{{ github_runner_repo | default('username/repo') }}"

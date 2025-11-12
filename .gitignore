@@ -2,7 +2,9 @@
 .sudo_as_admin_successful
 .bash_history
 .cache
-.vagrant
 .ansible
 .idea
 .vscode
+venv/
+__pycache__/
+*.pyc

@@ -80,11 +80,63 @@ at build time, for instance, Wi-Fi credentials that can be built into tests that
 where the runner container is located.
 
 ## Testing
-Using a clean slate vagrant ubuntu vm from the vagrant folder run `vagrant up` and then
-use `vagrant ssh` to get into the machine, then `ansible-playbook playbooks/github_actions.yml`
 
-If changes are made, you can re-run: `ansible-galaxy collection build --force` and
-`ansible-galaxy collection install *tar.gz --force`
+This role uses [Molecule](https://ansible.readthedocs.io/projects/molecule/) for testing with Docker.
+
+### Requirements
+- Python 3.8+
+- Docker
+- Docker daemon running
+
+### Setup
+
+Create and activate a virtual environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Linux/macOS
+# or
+venv\Scripts\activate  # On Windows
+```
+
+Install dependencies:
+```bash
+pip install -r requirements.txt
+ansible-galaxy collection install -r requirements.yml
+```
+
+### Running Tests
+
+Run the full test suite:
+```bash
+molecule test
+```
+
+Test on a specific platform:
+```bash
+molecule test --platform-name ubuntu-22.04
+```
+
+Individual test stages:
+```bash
+molecule create     # Create test containers
+molecule converge   # Run the role
+molecule verify     # Run verification tests
+molecule destroy    # Clean up test containers
+```
+
+### Test Scenarios
+
+The role includes multiple test scenarios to verify different configurations:
+
+- **default**: Non-Java repository runner
+- **java-runner**: Java/Android runner without exposed ports
+- **android-runner**: Android runner with ADB ports exposed
+- **org-runner**: Organization runner configuration
+
+Run all scenarios:
+```bash
+molecule test --all
+```
 
 ## Inspiration
 * [https://github.com/macunha1/ansible-github-actions-runner](https://github.com/macunha1/ansible-github-actions-runner)

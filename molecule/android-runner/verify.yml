@@ -1,0 +1,60 @@
+---
+- name: Verify Android Runner
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Check if GitHub runner container is running
+      community.docker.docker_container_info:
+        name: "{{ github_runner_name }}"
+      register: runner_container
+
+    - name: Verify container exists
+      ansible.builtin.assert:
+        that:
+          - runner_container.exists
+        fail_msg: "GitHub runner container does not exist"
+        success_msg: "GitHub runner container exists"
+
+    - name: Verify container is running
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.State.Running
+        fail_msg: "GitHub runner container is not running"
+        success_msg: "GitHub runner container is running"
+
+    - name: Verify container is using Android image
+      ansible.builtin.assert:
+        that:
+          - "'compscidr/github-runner-android' in runner_container.container.Config.Image"
+        fail_msg: "GitHub runner container is not using the Android image"
+        success_msg: "GitHub runner container is using the correct Android image"
+
+    - name: Debug full container info
+      ansible.builtin.debug:
+        var: runner_container.container
+
+    - name: Debug HostConfig.PortBindings
+      ansible.builtin.debug:
+        var: runner_container.container.HostConfig.PortBindings
+
+    - name: Debug NetworkSettings.Ports
+      ansible.builtin.debug:
+        var: runner_container.container.NetworkSettings.Ports
+
+    - name: Verify ADB port is configured in HostConfig
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.HostConfig.PortBindings is defined
+          - runner_container.container.HostConfig.PortBindings | length > 0
+          - "'5037/tcp' in runner_container.container.HostConfig.PortBindings"
+        fail_msg: "Android runner should have ADB port 5037 configured in HostConfig.PortBindings"
+        success_msg: "Android runner has ADB port configured (correct)"
+
+    - name: Verify ADB port mapping details
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.HostConfig.PortBindings['5037/tcp'] is defined
+          - runner_container.container.HostConfig.PortBindings['5037/tcp'] | length > 0
+        fail_msg: "ADB port 5037 is not properly mapped"
+        success_msg: "ADB port 5037 is properly mapped"

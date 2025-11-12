@@ -1,0 +1,50 @@
+---
+- name: Verify Org Runner
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Check if GitHub runner container is running
+      community.docker.docker_container_info:
+        name: "{{ github_runner_name }}"
+      register: runner_container
+
+    - name: Verify container exists
+      ansible.builtin.assert:
+        that:
+          - runner_container.exists
+        fail_msg: "GitHub runner container does not exist"
+        success_msg: "GitHub runner container exists"
+
+    - name: Verify container is running
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.State.Running
+        fail_msg: "GitHub runner container is not running"
+        success_msg: "GitHub runner container is running"
+
+    - name: Debug environment variables
+      ansible.builtin.debug:
+        var: runner_container.container.Config.Env
+
+    - name: Verify RUNNER_SCOPE is set to org
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.Config.Env | select('match', '^RUNNER_SCOPE=org$') | list | length > 0
+        fail_msg: "RUNNER_SCOPE should be set to 'org' for organization runners"
+        success_msg: "RUNNER_SCOPE is correctly set to 'org'"
+
+    - name: Verify ORG_NAME is set
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.Config.Env | select('match', '^ORG_NAME=') | list | length > 0
+          - runner_container.container.Config.Env | select('match', '^ORG_NAME=test-org$') | list | length > 0
+        fail_msg: "ORG_NAME should be set for organization runners"
+        success_msg: "ORG_NAME is correctly set"
+
+    - name: Verify REPO_URL is NOT set for org runners
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.Config.Env | select('match', '^REPO_URL=') | list | length == 0
+        fail_msg: "REPO_URL should NOT be set for organization runners"
+        success_msg: "REPO_URL is correctly not set for org runner"

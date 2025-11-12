@@ -1,0 +1,49 @@
+---
+- name: Verify Java Runner
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Check if GitHub runner container is running
+      community.docker.docker_container_info:
+        name: "{{ github_runner_name }}"
+      register: runner_container
+
+    - name: Verify container exists
+      ansible.builtin.assert:
+        that:
+          - runner_container.exists
+        fail_msg: "GitHub runner container does not exist"
+        success_msg: "GitHub runner container exists"
+
+    - name: Verify container is running
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.State.Running
+        fail_msg: "GitHub runner container is not running"
+        success_msg: "GitHub runner container is running"
+
+    - name: Verify container is using Java image
+      ansible.builtin.assert:
+        that:
+          - "'compscidr/github-runner-android' in runner_container.container.Config.Image"
+        fail_msg: "GitHub runner container is not using the Java/Android image"
+        success_msg: "GitHub runner container is using the correct Java/Android image"
+
+    - name: Debug ports configuration
+      ansible.builtin.debug:
+        var: runner_container.container.NetworkSettings.Ports
+
+    - name: Verify no ports are exposed for Java runner
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.NetworkSettings.Ports is none or runner_container.container.NetworkSettings.Ports | length == 0
+        fail_msg: "Java runner should not have ports exposed"
+        success_msg: "Java runner has no ports exposed (correct)"
+
+    - name: Verify .android volume is mounted
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.HostConfig.Binds | select('search', '/root/.android') | list | length > 0
+        fail_msg: "Android volume is not mounted"
+        success_msg: "Android volume is mounted correctly"
