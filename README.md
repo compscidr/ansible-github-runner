@@ -29,7 +29,7 @@ collections:
 
 Install the collection:
 ```
-ansible-galaxy install -r meta/requirements.yml
+ansible-galaxy collection install -r meta/requirements.yml
 ```
 
 Use in a playbook:
@@ -58,7 +58,7 @@ Use in a playbook:
 # Variables
 Variable                                    | Description
 ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-github_runner_personal_access_token         | GH personal access toke, see: https://github.com/myoung34/docker-github-actions-runner/wiki/Usage#token-scope for permissions needed
+github_runner_personal_access_token         | GH personal access token, see: https://github.com/myoung34/docker-github-actions-runner/wiki/Usage#token-scope for permissions needed
 github_runner_name                          | the name for the runner (will show up in GH to differentiate runners)
 github_runner_repo                          | the repo for the runner in format "user-name/repo" (ignored if an org runner)
 github_runner_labels                        | labels to attach to the runner (comma separated, defaults to "self-hosted")
@@ -78,6 +78,21 @@ github_runner_github_host                   | The GITHUB_HOST used for registeri
 Notes: the env file lets you do things like set site-specific credentials into the runner that can be built into the code
 at build time, for instance, Wi-Fi credentials that can be built into tests that are specific to the location of
 where the runner container is located.
+
+## Understanding Java and Android Variables
+
+The role provides two related but distinct variables for controlling runner behavior:
+
+- **`github_runner_java`**: Controls which Docker image to use. When `true`, uses the `compscidr/github-runner-android` image which includes Java, Android SDK, and related tools. When `false` (default), uses the standard `myoung34/github-runner` image.
+
+- **`github_runner_android`**: Controls Android-specific features like mounting the `.android` volume. This should be set to `true` when you need Android development capabilities.
+
+- **`github_runner_android_expose_adb_ports`**: Controls whether ADB ports are exposed to the host. Only takes effect when `github_runner_android` is `true`. Set to `true` if you need to access ADB from outside the container (e.g., for physical device testing).
+
+**Typical usage patterns:**
+- **Standard runner**: `github_runner_java: false`, `github_runner_android: false`
+- **Java/Android runner without ADB**: `github_runner_java: true`, `github_runner_android: true`, `github_runner_android_expose_adb_ports: false`
+- **Full Android runner with ADB**: `github_runner_java: true`, `github_runner_android: true`, `github_runner_android_expose_adb_ports: true`
 
 ## Testing
 

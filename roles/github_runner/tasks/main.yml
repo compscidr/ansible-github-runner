@@ -10,15 +10,14 @@
     device_cgroup_rules: "{{ ['c 189:* rmw'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
     volumes: "{{ runner_volumes }}"
     restart_policy: unless-stopped
-    ports: "{{ [github_runner_adb_port ~ ':5037'] if (github_runner_android and github_runner_android_expose_adb_ports) else omit }}"
+    ports: "{{ [github_runner_adb_port | string ~ ':5037'] if (github_runner_android and github_runner_android_expose_adb_ports) else omit }}"
     env: "{{ runner_env }}"
     env_file: "{{ github_runner_env_filename if github_runner_env_file else omit }}"
   vars:
     runner_volumes: >-
       {{
-        ['/var/run/docker.sock:/var/run/docker.sock', '/root/.android:/root/.android']
-        if github_runner_java
-        else ['/var/run/docker.sock:/var/run/docker.sock']
+        ['/var/run/docker.sock:/var/run/docker.sock'] +
+        (['/root/.android:/root/.android'] if github_runner_android else [])
       }}
     runner_env: >-
       {{
@@ -30,7 +29,7 @@
           'HOST_NAME': inventory_hostname,
           'GITHUB_HOST': github_runner_github_host
         } | combine(
-          {'REPO_URL': 'https://' + github_runner_github_host + '/' + github_runner_repo}
+          {'REPO_URL': 'https://' ~ github_runner_github_host ~ '/' ~ github_runner_repo}
           if not github_runner_org else {}
         ) | combine(
           {'RUNNER_SCOPE': 'org', 'ORG_NAME': github_runner_org_name}
