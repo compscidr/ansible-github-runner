@@ -30,7 +30,6 @@ provisioner:
         github_runner_repo: "test/repo"
         github_runner_labels: "self-hosted,java"
         github_runner_java: true
-        github_runner_android: true
         github_runner_java_mount_usb: false
 verifier:
   name: ansible
