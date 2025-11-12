@@ -38,20 +38,9 @@ jobs:
           - java-runner
           - android-runner
           - org-runner
-      max-parallel: 1
       fail-fast: false
 
     steps:
-      - name: Free up disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          sudo docker system prune -af
-          sudo apt-get clean
-          df -h
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -83,12 +72,6 @@ jobs:
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
-
-      - name: Cleanup Docker after test
-        if: always()
-        run: |
-          docker system prune -af --volumes
-          df -h
 
       - name: Upload molecule logs on failure
         if: failure()
