@@ -1,5 +1,5 @@
 ---
-name: Molecule Test
+name: CI
 
 on:
   push:
@@ -9,8 +9,27 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  lint:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main
+        with:
+          args: ""
+          setup_python: "true"
+          working_directory: ""
+          requirements_file: ""
+
   molecule:
+    name: Molecule Test
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       matrix:

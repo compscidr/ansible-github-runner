@@ -41,7 +41,7 @@
         fail_msg: "Java runner should not have ports exposed"
         success_msg: "Java runner has no ports exposed (correct)"
 
-    - name: Verify .android volume is NOT mounted (requires github_runner_android: true)
+    - name: Verify .android volume is NOT mounted (requires github_runner_android to be true)
       ansible.builtin.assert:
         that:
           - runner_container.container.HostConfig.Binds | select('search', '/root/.android') | list | length == 0
