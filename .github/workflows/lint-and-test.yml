@@ -39,6 +39,7 @@ jobs:
           - android-runner
           - org-runner
       fail-fast: false
+      max-parallel: 1
 
     steps:
       - name: Checkout code
@@ -57,6 +58,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
+      - name: Free up disk space
+        run: |
+          echo "Disk space before cleanup:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo docker system prune -af --volumes
+          echo "Disk space after cleanup:"
+          df -h
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -72,6 +85,13 @@ jobs:
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
+
+      - name: Clean up Docker after test
+        if: always()
+        run: |
+          docker system prune -af --volumes
+          echo "Disk space after test cleanup:"
+          df -h
 
       - name: Upload molecule logs on failure
         if: failure()
