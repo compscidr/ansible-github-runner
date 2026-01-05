@@ -74,6 +74,7 @@ github_runner_non_java_image                | the non-java/android runner image 
 github_runner_env_file                      | whether to use an env file for passing extra environment variables into the runner container (defaults to false)
 github_runner_env_filename                  | the filename of the env file for passing extra environment variables into the container (defaults to ".env")
 github_runner_github_host                   | The GITHUB_HOST used for registering the runner (defaults to "github.com")
+github_runner_persist_config                | whether to persist runner configuration across container restarts using a named volume (defaults to true)
 
 Notes: the env file lets you do things like set site-specific credentials into the runner that can be built into the code
 at build time, for instance, Wi-Fi credentials that can be built into tests that are specific to the location of

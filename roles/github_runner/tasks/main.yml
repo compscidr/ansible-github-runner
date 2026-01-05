@@ -17,7 +17,8 @@
     runner_volumes: >-
       {{
         ['/var/run/docker.sock:/var/run/docker.sock'] +
-        (['/root/.android:/root/.android'] if github_runner_android else [])
+        (['/root/.android:/root/.android'] if github_runner_android else []) +
+        ([github_runner_name ~ '-runner-data:/runner-data'] if github_runner_persist_config else [])
       }}
     runner_env: >-
       {{
@@ -34,5 +35,8 @@
         ) | combine(
           {'RUNNER_SCOPE': 'org', 'ORG_NAME': github_runner_org_name}
           if github_runner_org else {}
+        ) | combine(
+          {'CONFIGURED_ACTIONS_RUNNER_FILES_DIR': '/runner-data'}
+          if github_runner_persist_config else {}
         )
       }}
