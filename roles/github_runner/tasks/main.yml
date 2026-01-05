@@ -24,6 +24,7 @@
         {
           'ACCESS_TOKEN': github_runner_personal_access_token,
           'DISABLE_AUTO_UPDATE': 'true',
+          'DISABLE_AUTOMATIC_DEREGISTRATION': 'true',
           'RUNNER_NAME_PREFIX': github_runner_name,
           'LABELS': github_runner_labels,
           'HOST_NAME': inventory_hostname,
