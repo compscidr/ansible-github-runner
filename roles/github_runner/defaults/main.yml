@@ -20,3 +20,5 @@ github_runner_env_filename: ".env"
 github_runner_adb_port: 5037
 
 github_runner_github_host: "github.com"
+
+github_runner_persist_config: true
