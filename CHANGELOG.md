@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3] - 2026-05-27
+### Added
+- Added `github_runner_network_mode` variable (defaults to `default`) to control the runner container's Docker network mode. Set to `host` so the in-container `adb` client can reach an adb server running on the host at `127.0.0.1:5037`.
+- Added `android-runner-host` molecule scenario verifying host networking converges, is idempotent, and publishes no ports.
+
+### Changed
+- ADB port mapping is now omitted automatically when `github_runner_network_mode` is `host`, since `ports:` is invalid together with `network_mode: host`.
+
 ## [0.1.0] - 2025-11-12
 ### Breaking Changes
 - Removed `github_runner_install_docker` variable and Docker installation task
