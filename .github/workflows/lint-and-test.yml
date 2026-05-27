@@ -37,6 +37,7 @@ jobs:
           - default
           - java-runner
           - android-runner
+          - android-runner-host
           - org-runner
       fail-fast: false
       max-parallel: 1

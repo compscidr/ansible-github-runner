@@ -10,10 +10,19 @@
     device_cgroup_rules: "{{ ['c 189:* rmw'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
     volumes: "{{ runner_volumes }}"
     restart_policy: unless-stopped
-    ports: "{{ [github_runner_adb_port | string ~ ':5037'] if (github_runner_android and github_runner_android_expose_adb_ports) else omit }}"
+    network_mode: "{{ github_runner_network_mode }}"
+    ports: "{{ runner_ports }}"
     env: "{{ runner_env }}"
     env_file: "{{ github_runner_env_filename if github_runner_env_file else omit }}"
   vars:
+    # ports: is invalid together with network_mode: host, so omit it in host mode.
+    runner_ports: >-
+      {{
+        [github_runner_adb_port | string ~ ':5037']
+        if (github_runner_android and github_runner_android_expose_adb_ports
+            and github_runner_network_mode != 'host')
+        else omit
+      }}
     runner_volumes: >-
       {{
         ['/var/run/docker.sock:/var/run/docker.sock'] +
