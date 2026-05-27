@@ -1,0 +1,55 @@
+---
+- name: Verify Android Runner (host networking)
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Check if GitHub runner container is running
+      community.docker.docker_container_info:
+        name: "{{ github_runner_name }}"
+      register: runner_container
+
+    - name: Verify container exists
+      ansible.builtin.assert:
+        that:
+          - runner_container.exists
+        fail_msg: "GitHub runner container does not exist"
+        success_msg: "GitHub runner container exists"
+
+    - name: Verify container is running
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.State.Running
+        fail_msg: "GitHub runner container is not running"
+        success_msg: "GitHub runner container is running"
+
+    - name: Verify container is using Android image
+      ansible.builtin.assert:
+        that:
+          - "'compscidr/github-runner-android' in runner_container.container.Config.Image"
+        fail_msg: "GitHub runner container is not using the Android image"
+        success_msg: "GitHub runner container is using the correct Android image"
+
+    - name: Debug HostConfig.NetworkMode
+      ansible.builtin.debug:
+        var: runner_container.container.HostConfig.NetworkMode
+
+    - name: Debug HostConfig.PortBindings
+      ansible.builtin.debug:
+        var: runner_container.container.HostConfig.PortBindings
+
+    - name: Verify container is using host network mode
+      ansible.builtin.assert:
+        that:
+          - runner_container.container.HostConfig.NetworkMode == 'host'
+        fail_msg: "GitHub runner container is not using host network mode"
+        success_msg: "GitHub runner container is using host network mode (correct)"
+
+    - name: Verify no ADB ports are published in host network mode
+      ansible.builtin.assert:
+        that:
+          - >-
+            (runner_container.container.HostConfig.PortBindings | default({}, true))
+            | length == 0
+        fail_msg: "Host network mode must not publish ports (ports: is invalid with network_mode: host)"
+        success_msg: "No ports published in host network mode (correct)"

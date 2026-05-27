@@ -19,6 +19,10 @@ github_runner_env_filename: ".env"
 
 github_runner_adb_port: 5037
 
+# Docker network mode for the runner container. "host" lets the in-container
+# adb client reach an adb server running on the host at 127.0.0.1:5037.
+github_runner_network_mode: default
+
 github_runner_github_host: "github.com"
 
 github_runner_persist_config: true

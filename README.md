@@ -69,6 +69,7 @@ github_runner_java_mount_usb                | whether to mount usb devices (for 
 github_runner_android                       | whether this is an android runner (defaults to false)
 github_runner_android_expose_adb_ports      | whether to expose ADB ports for android runners (defaults to false, requires github_runner_android to be true)
 github_runner_adb_port                      | the host port to map ADB to (defaults to 5037)
+github_runner_network_mode                  | the docker network mode for the runner container (defaults to "default"; set to "host" so the in-container adb client can reach an adb server running on the host at 127.0.0.1:5037)
 github_runner_java_image                    | the java / android runner image (defaults to compscidr/github-runner-android:latest)
 github_runner_non_java_image                | the non-java/android runner image (defaults to myoung34/github-runner:latest)
 github_runner_env_file                      | whether to use an env file for passing extra environment variables into the runner container (defaults to false)
@@ -90,10 +91,13 @@ The role provides two related but distinct variables for controlling runner beha
 
 - **`github_runner_android_expose_adb_ports`**: Controls whether ADB ports are exposed to the host. Only takes effect when `github_runner_android` is `true`. Set to `true` if you need to access ADB from outside the container (e.g., for physical device testing).
 
+- **`github_runner_network_mode`**: Controls the container's docker network mode. Defaults to `default`. Set to `host` when the **adb server runs on the host** (the host owns the USB phones) and the in-container `adb` client should reach it at `127.0.0.1:5037`. This shares the host's network namespace so a CI job can reboot its phones without the container losing them on USB re-enumeration. Note: `host` mode is incompatible with publishing `ports:`, so `github_runner_android_expose_adb_ports` is ignored (no port mapping is created) when `network_mode` is `host`.
+
 **Typical usage patterns:**
 - **Standard runner**: `github_runner_java: false`, `github_runner_android: false`
 - **Java/Android runner without ADB**: `github_runner_java: true`, `github_runner_android: true`, `github_runner_android_expose_adb_ports: false`
 - **Full Android runner with ADB**: `github_runner_java: true`, `github_runner_android: true`, `github_runner_android_expose_adb_ports: true`
+- **Android runner with host-side adb**: `github_runner_java: true`, `github_runner_android: true`, `github_runner_network_mode: host`
 
 ## Testing
 
