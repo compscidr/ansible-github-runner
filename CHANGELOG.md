@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4] - 2026-08-10
+### Fixed
+- First playbook run no longer fails with `UnixHTTPConnectionPool ... Read timed out (read timeout=60)` when replacing an existing runner container. Stopping and removing a crash-looping or wedged runner can exceed the Docker SDK's 60s default client timeout; the daemon finished the removal in the background, which is why an immediate rerun succeeded.
+
+### Added
+- `github_runner_docker_timeout` (default `180`): Docker API client timeout for the deploy task.
+- `github_runner_stop_timeout` (default `10`): seconds docker waits after SIGTERM before SIGKILL when stopping the runner container.
+
 ## [0.1.3] - 2026-05-27
 ### Added
 - Added `github_runner_network_mode` variable (defaults to `default`) to control the runner container's Docker network mode. Set to `host` so the in-container `adb` client can reach an adb server running on the host at `127.0.0.1:5037`.

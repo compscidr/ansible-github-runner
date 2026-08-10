@@ -26,3 +26,12 @@ github_runner_network_mode: default
 github_runner_github_host: "github.com"
 
 github_runner_persist_config: true
+
+# Seconds docker waits after SIGTERM before SIGKILL when stopping the runner
+# container (e.g. while replacing it on an image bump).
+github_runner_stop_timeout: 10
+
+# Docker API client timeout for the deploy task. Stopping and removing a
+# crash-looping or wedged runner container can exceed the SDK's 60s default,
+# which fails the first playbook run and succeeds on the rerun.
+github_runner_docker_timeout: 180
