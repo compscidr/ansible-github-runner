@@ -10,6 +10,14 @@
     device_cgroup_rules: "{{ ['c 189:* rmw'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
     volumes: "{{ runner_volumes }}"
     restart_policy: unless-stopped
+    # Replacing an existing container (image bump) stops and removes it first.
+    # A crash-looping or wedged runner can take well over the Docker SDK's
+    # 60s default read timeout to stop+remove, which fails the first run and
+    # then succeeds on the rerun (the daemon finishes the removal in the
+    # background). Bound the graceful stop and give the API client enough
+    # room to wait out a slow removal.
+    stop_timeout: "{{ github_runner_stop_timeout }}"
+    timeout: "{{ github_runner_docker_timeout }}"
     network_mode: "{{ github_runner_network_mode }}"
     ports: "{{ runner_ports }}"
     env: "{{ runner_env }}"

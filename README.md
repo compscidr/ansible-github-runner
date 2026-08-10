@@ -76,6 +76,8 @@ github_runner_env_file                      | whether to use an env file for pas
 github_runner_env_filename                  | the filename of the env file for passing extra environment variables into the container (defaults to ".env")
 github_runner_github_host                   | The GITHUB_HOST used for registering the runner (defaults to "github.com")
 github_runner_persist_config                | whether to persist runner configuration across container restarts using a named volume (defaults to true)
+github_runner_stop_timeout                  | seconds docker waits after SIGTERM before SIGKILL when stopping the runner container, e.g. while replacing it on an image bump (defaults to 10)
+github_runner_docker_timeout                | Docker API client timeout in seconds for the deploy task; stopping and removing a crash-looping runner can exceed the SDK's 60s default (defaults to 180)
 
 Notes: the env file lets you do things like set site-specific credentials into the runner that can be built into the code
 at build time, for instance, Wi-Fi credentials that can be built into tests that are specific to the location of
