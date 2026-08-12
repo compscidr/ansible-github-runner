@@ -1,14 +1,104 @@
 ---
+# The pull is separated from the container task for the drain guard below:
+# pulling is always safe while the runner is mid-job (it never touches the
+# container), and whether the pull actually fetched a new digest is half the
+# signal for "the container is about to be replaced". The deploy task then
+# runs with pull: false — a freshly pulled image still triggers the replace
+# via the module's image-ID comparison.
+- name: Pull runner image
+  tags: github_runner
+  become: true
+  community.docker.docker_image_pull:
+    name: "{{ github_runner_java_image if github_runner_java else github_runner_non_java_image }}"
+  register: github_runner_image_pull
+
+# Check-mode pass with identical arguments (minus the pull): detects
+# config-driven recreation (env, volumes, network mode, ...) without touching
+# anything. Together with the pull result this decides whether the drain
+# guard needs to run at all — an idempotent deploy skips straight through.
+- name: Check whether the runner container would change
+  tags: github_runner
+  become: true
+  check_mode: true
+  community.docker.docker_container:
+    name: "{{ github_runner_name }}"
+    image: "{{ github_runner_java_image if github_runner_java else github_runner_non_java_image }}"
+    pull: false
+    devices: "{{ ['/dev/bus/usb:/dev/bus/usb:rwm'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
+    device_cgroup_rules: "{{ ['c 189:* rmw'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
+    volumes: "{{ github_runner_volumes }}"
+    restart_policy: unless-stopped
+    stop_timeout: "{{ github_runner_stop_timeout }}"
+    timeout: "{{ github_runner_docker_timeout }}"
+    network_mode: "{{ github_runner_network_mode }}"
+    ports: "{{ github_runner_ports }}"
+    env: "{{ github_runner_env }}"
+    env_file: "{{ github_runner_env_filename if github_runner_env_file else omit }}"
+  register: github_runner_container_plan
+
+- name: Look up existing runner container
+  tags: github_runner
+  become: true
+  community.docker.docker_container_info:
+    name: "{{ github_runner_name }}"
+  register: github_runner_existing
+
+# Drain-before-replace: replacing the container while its runner is executing
+# a CI job destroys the job (GitHub waits out the runner heartbeat ~10 min,
+# then fails every remaining step). When a replace is imminent and the
+# existing runner is busy, poll the runners API until it goes idle. A timeout
+# fails the deploy loudly — rerun with github_runner_force_replace=true to
+# replace anyway (killing the in-flight job) in an emergency.
+- name: Wait for the runner to finish its current job before replacing
+  tags: github_runner
+  check_mode: false
+  when:
+    - github_runner_drain_before_replace
+    - not github_runner_force_replace
+    - github_runner_existing.exists
+    - github_runner_image_pull is changed or github_runner_container_plan is changed
+  block:
+    - name: Poll the runners API until this runner is idle
+      ansible.builtin.uri:
+        url: "{{ github_runner_api_runners_url }}"
+        headers:
+          Authorization: "Bearer {{ github_runner_personal_access_token }}"
+          Accept: "application/vnd.github+json"
+        return_content: true
+      register: github_runner_busy_check
+      # The Authorization header carries the PAT — keep it out of logs.
+      no_log: true
+      retries: "{{ ((github_runner_drain_timeout_minutes | int) * 60 / (github_runner_drain_poll_seconds | int)) | round(0, 'ceil') | int }}"
+      delay: "{{ github_runner_drain_poll_seconds }}"
+      until: >-
+        github_runner_busy_check.json.runners
+        | selectattr('name', 'match', github_runner_name_match)
+        | selectattr('busy')
+        | list | length == 0
+  rescue:
+    - name: Fail with drain guidance
+      ansible.builtin.fail:
+        msg: >-
+          Runner {{ github_runner_name }} was still busy after
+          {{ github_runner_drain_timeout_minutes }} minutes (or the busy-check
+          API call failed) — not replacing its container mid-job. Rerun with
+          -e github_runner_force_replace=true to replace anyway (this kills
+          the in-flight CI job), or with
+          -e github_runner_drain_before_replace=false to restore the old
+          always-replace behavior.
+
 - name: Deploy Github Runner
   tags: github_runner
   become: true
   community.docker.docker_container:
     name: "{{ github_runner_name }}"
     image: "{{ github_runner_java_image if github_runner_java else github_runner_non_java_image }}"
-    pull: true
+    # Pulled above; the image-ID comparison against the running container
+    # still triggers the replace when the pull fetched a new digest.
+    pull: false
     devices: "{{ ['/dev/bus/usb:/dev/bus/usb:rwm'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
     device_cgroup_rules: "{{ ['c 189:* rmw'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
-    volumes: "{{ runner_volumes }}"
+    volumes: "{{ github_runner_volumes }}"
     restart_policy: unless-stopped
     # Replacing an existing container (image bump) stops and removes it first.
     # A crash-looping or wedged runner can take well over the Docker SDK's
@@ -19,42 +109,6 @@
     stop_timeout: "{{ github_runner_stop_timeout }}"
     timeout: "{{ github_runner_docker_timeout }}"
     network_mode: "{{ github_runner_network_mode }}"
-    ports: "{{ runner_ports }}"
-    env: "{{ runner_env }}"
+    ports: "{{ github_runner_ports }}"
+    env: "{{ github_runner_env }}"
     env_file: "{{ github_runner_env_filename if github_runner_env_file else omit }}"
-  vars:
-    # ports: is invalid together with network_mode: host, so omit it in host mode.
-    runner_ports: >-
-      {{
-        [github_runner_adb_port | string ~ ':5037']
-        if (github_runner_android and github_runner_android_expose_adb_ports
-            and github_runner_network_mode != 'host')
-        else omit
-      }}
-    runner_volumes: >-
-      {{
-        ['/var/run/docker.sock:/var/run/docker.sock'] +
-        (['/root/.android:/root/.android'] if github_runner_android else []) +
-        ([github_runner_name ~ '-runner-data:/runner-data'] if github_runner_persist_config else [])
-      }}
-    runner_env: >-
-      {{
-        {
-          'ACCESS_TOKEN': github_runner_personal_access_token,
-          'DISABLE_AUTO_UPDATE': 'true',
-          'DISABLE_AUTOMATIC_DEREGISTRATION': 'true',
-          'RUNNER_NAME_PREFIX': github_runner_name,
-          'LABELS': github_runner_labels,
-          'HOST_NAME': inventory_hostname,
-          'GITHUB_HOST': github_runner_github_host
-        } | combine(
-          {'REPO_URL': 'https://' ~ github_runner_github_host ~ '/' ~ github_runner_repo}
-          if not github_runner_org else {}
-        ) | combine(
-          {'RUNNER_SCOPE': 'org', 'ORG_NAME': github_runner_org_name}
-          if github_runner_org else {}
-        ) | combine(
-          {'CONFIGURED_ACTIONS_RUNNER_FILES_DIR': '/runner-data'}
-          if github_runner_persist_config else {}
-        )
-      }}

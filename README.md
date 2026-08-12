@@ -78,6 +78,11 @@ github_runner_github_host                   | The GITHUB_HOST used for registeri
 github_runner_persist_config                | whether to persist runner configuration across container restarts using a named volume (defaults to true)
 github_runner_stop_timeout                  | seconds docker waits after SIGTERM before SIGKILL when stopping the runner container, e.g. while replacing it on an image bump (defaults to 10)
 github_runner_docker_timeout                | Docker API client timeout in seconds for the deploy task; stopping and removing a crash-looping runner can exceed the SDK's 60s default (defaults to 180)
+github_runner_drain_before_replace          | when a deploy is about to replace the runner container while the runner is executing a CI job, wait for the job to finish instead of destroying it (defaults to true)
+github_runner_drain_timeout_minutes         | how long to wait for a busy runner to go idle before failing the deploy (defaults to 45)
+github_runner_drain_poll_seconds            | polling interval for the busy-check against the GitHub runners API (defaults to 30)
+github_runner_force_replace                 | emergency override: replace the container immediately even if a job is mid-flight (defaults to false)
+github_runner_api_base                      | GitHub API base URL used by the busy-check; derived automatically for github.com and GHES (/api/v3)
 
 Notes: the env file lets you do things like set site-specific credentials into the runner that can be built into the code
 at build time, for instance, Wi-Fi credentials that can be built into tests that are specific to the location of

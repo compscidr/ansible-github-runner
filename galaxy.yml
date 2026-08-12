@@ -18,4 +18,4 @@ tags:
     - hosted
     - infrastructure
 dependencies:
-    community.docker: "*"
+    community.docker: ">=3.6.0"  # docker_image_pull
