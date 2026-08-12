@@ -58,6 +58,34 @@
     - github_runner_existing.exists
     - github_runner_image_pull is changed or github_runner_container_plan is changed
   block:
+    # The busy-check reads a single page. A truncated listing could hide the
+    # target runner on a later page and let the drain conclude "idle" while a
+    # job is mid-flight — the exact failure this gate exists to prevent — so a
+    # paginated listing fails loudly instead of proceeding.
+    - name: Probe the runners listing for the drain check
+      ansible.builtin.uri:
+        url: "{{ github_runner_api_runners_url }}"
+        headers:
+          Authorization: "Bearer {{ github_runner_personal_access_token }}"
+          Accept: "application/vnd.github+json"
+        return_content: true
+      register: github_runner_listing_probe
+      # The Authorization header carries the PAT — keep it out of logs.
+      no_log: true
+
+    - name: Fail if the runners listing is paginated beyond one page
+      ansible.builtin.assert:
+        that:
+          - github_runner_listing_probe.json.total_count == (github_runner_listing_probe.json.runners | length)
+        fail_msg: >-
+          The runners listing has
+          {{ github_runner_listing_probe.json.total_count }} runners but only
+          {{ github_runner_listing_probe.json.runners | length }} were
+          returned — the drain busy-check could miss the target runner on a
+          later page and replace it mid-job. Implement pagination in the
+          drain gate before deploying to this account.
+        quiet: true
+
     - name: Poll the runners API until this runner is idle
       ansible.builtin.uri:
         url: "{{ github_runner_api_runners_url }}"
@@ -68,22 +96,28 @@
       register: github_runner_busy_check
       # The Authorization header carries the PAT — keep it out of logs.
       no_log: true
-      retries: "{{ ((github_runner_drain_timeout_minutes | int) * 60 / (github_runner_drain_poll_seconds | int)) | round(0, 'ceil') | int }}"
-      delay: "{{ github_runner_drain_poll_seconds }}"
+      retries: "{{ ((github_runner_drain_timeout_minutes | int) * 60 / (github_runner_drain_poll_seconds_clamped | int)) | round(0, 'ceil') | int }}"
+      delay: "{{ github_runner_drain_poll_seconds_clamped }}"
+      # Guard the shape before reading it: a rate-limit or transient non-JSON
+      # response must count as "still waiting" (retry), not blow up the until
+      # expression and abort the drain a retry might have saved.
       until: >-
-        github_runner_busy_check.json.runners
+        github_runner_busy_check.json is defined
+        and github_runner_busy_check.json.runners is defined
+        and (github_runner_busy_check.json.runners
         | selectattr('name', 'match', github_runner_name_match)
         | selectattr('busy')
-        | list | length == 0
+        | list | length == 0)
   rescue:
     - name: Fail with drain guidance
       ansible.builtin.fail:
         msg: >-
-          Runner {{ github_runner_name }} was still busy after
-          {{ github_runner_drain_timeout_minutes }} minutes (or the busy-check
-          API call failed) — not replacing its container mid-job. Rerun with
-          -e github_runner_force_replace=true to replace anyway (this kills
-          the in-flight CI job), or with
+          Not replacing {{ github_runner_name }}'s container: the drain gate
+          did not confirm the runner idle within
+          {{ github_runner_drain_timeout_minutes }} minutes.
+          Underlying failure: {{ ansible_failed_result.msg | default('(none recorded)') }}.
+          Rerun with -e github_runner_force_replace=true to replace anyway
+          (this kills any in-flight CI job), or with
           -e github_runner_drain_before_replace=false to restore the old
           always-replace behavior.
 

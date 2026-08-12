@@ -50,3 +50,7 @@ github_runner_api_runners_url: >-
     '/actions/runners?per_page=100'
   }}
 github_runner_name_match: "^{{ github_runner_name | regex_escape }}(-|$)"
+
+# Poll interval clamped to >=1s so a consumer setting 0 (or a value that casts
+# to 0) can't divide the retry computation by zero or spin the API.
+github_runner_drain_poll_seconds_clamped: "{{ [github_runner_drain_poll_seconds | int, 1] | max }}"
