@@ -8,7 +8,7 @@ description: "Installs github self hosted repo or org runners within a docker co
   can be a vanilla runner, or one with java / android installed."
 license_file: LICENSE
 readme: README.md
-version: 0.1.4
+version: 0.1.5
 repository: https://github.com/compscidr/ansible-github-runner
 tags:
     - github
@@ -18,4 +18,4 @@ tags:
     - hosted
     - infrastructure
 dependencies:
-    community.docker: "*"
+    community.docker: ">=3.6.0"  # docker_image_pull

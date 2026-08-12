@@ -35,3 +35,20 @@ github_runner_stop_timeout: 10
 # crash-looping or wedged runner container can exceed the SDK's 60s default,
 # which fails the first playbook run and succeeds on the rerun.
 github_runner_docker_timeout: 180
+
+# Drain-before-replace: when the deploy is about to replace the runner
+# container (new image digest or config change) while the existing runner is
+# executing a CI job, wait for the job to finish instead of destroying it
+# (replacing mid-job makes GitHub wait out the runner heartbeat ~10 min and
+# fail every remaining step). If the runner is still busy when the timeout
+# expires the deploy fails loudly rather than killing the job.
+github_runner_drain_before_replace: true
+github_runner_drain_timeout_minutes: 45
+github_runner_drain_poll_seconds: 30
+
+# Emergency override: replace immediately even if a job is mid-flight.
+github_runner_force_replace: false
+
+# GitHub API base for the drain busy-check. Derived for github.com and GHES
+# (/api/v3); override if your API lives elsewhere.
+github_runner_api_base: "{{ 'https://api.github.com' if github_runner_github_host == 'github.com' else 'https://' ~ github_runner_github_host ~ '/api/v3' }}"
