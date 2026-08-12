@@ -1,19 +1,24 @@
 # Changelog
 
-## [0.1.4] - 2026-08-10
+## [0.1.5] - 2026-08-12
 ### Fixed
-- First playbook run no longer fails with `UnixHTTPConnectionPool ... Read timed out (read timeout=60)` when replacing an existing runner container. Stopping and removing a crash-looping or wedged runner can exceed the Docker SDK's 60s default client timeout; the daemon finished the removal in the background, which is why an immediate rerun succeeded.
-- The deploy no longer replaces a runner container while its runner is mid-job (which destroyed the CI job: GitHub waits out the runner heartbeat ~10 min, then fails every remaining step). When a replace is imminent — new image digest or config change — and the existing runner is busy, the role now polls the GitHub runners API until the runner is idle before replacing, failing the deploy loudly on timeout instead of killing the job.
+- The deploy no longer replaces a runner container while its runner is mid-job (which destroyed the CI job: GitHub waits out the runner heartbeat ~10 min, then fails every remaining step). When a replace is imminent — new image digest or config change — and the existing runner is busy, the role now polls the GitHub runners API until the runner is idle before replacing, failing the deploy loudly on timeout instead of killing the job. The busy-check fails loudly on a paginated (>100 runners) listing, treats malformed/rate-limited API responses as still-waiting, and clamps the poll interval to >=1s.
 
 ### Added
 - `github_runner_drain_before_replace` (default `true`), `github_runner_drain_timeout_minutes` (default `45`), `github_runner_drain_poll_seconds` (default `30`): drain-before-replace guard configuration.
 - `github_runner_force_replace` (default `false`): emergency override — replace immediately even if a job is mid-flight.
 - `github_runner_api_base`: GitHub API base for the busy-check, derived for github.com and GHES.
-- `github_runner_docker_timeout` (default `180`): Docker API client timeout for the deploy task.
-- `github_runner_stop_timeout` (default `10`): seconds docker waits after SIGTERM before SIGKILL when stopping the runner container.
 
 ### Changed
 - The image pull is now a separate `docker_image_pull` task and the container task runs with `pull: false`; behavior is unchanged (a new digest still triggers the replace via image-ID comparison), but the pull result now feeds the drain guard. Requires `community.docker` >= 3.6.0.
+
+## [0.1.4] - 2026-08-10
+### Fixed
+- First playbook run no longer fails with `UnixHTTPConnectionPool ... Read timed out (read timeout=60)` when replacing an existing runner container. Stopping and removing a crash-looping or wedged runner can exceed the Docker SDK's 60s default client timeout; the daemon finished the removal in the background, which is why an immediate rerun succeeded.
+
+### Added
+- `github_runner_docker_timeout` (default `180`): Docker API client timeout for the deploy task.
+- `github_runner_stop_timeout` (default `10`): seconds docker waits after SIGTERM before SIGKILL when stopping the runner container.
 
 ## [0.1.3] - 2026-05-27
 ### Added
