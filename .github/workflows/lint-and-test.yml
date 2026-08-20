@@ -39,6 +39,7 @@ jobs:
           - android-runner
           - android-runner-host
           - org-runner
+          - no-docker-socket
       fail-fast: false
       max-parallel: 1
 

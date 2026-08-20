@@ -23,6 +23,14 @@ github_runner_adb_port: 5037
 # adb client reach an adb server running on the host at 127.0.0.1:5037.
 github_runner_network_mode: default
 
+# Whether to mount the host's /var/run/docker.sock into the runner container.
+# Only needed when CI jobs themselves use docker (builds, testcontainers,
+# service containers). Set to false for runners whose jobs never touch docker:
+# it drops a root-equivalent privilege, and on a desktop host it guarantees the
+# runner's jobs can't churn veth interfaces (each add/remove aborts in-flight
+# Chrome requests on that host with ERR_NETWORK_CHANGED).
+github_runner_mount_docker_socket: true
+
 github_runner_github_host: "github.com"
 
 github_runner_persist_config: true

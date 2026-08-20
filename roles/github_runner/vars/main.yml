@@ -13,7 +13,7 @@ github_runner_ports: >-
   }}
 github_runner_volumes: >-
   {{
-    ['/var/run/docker.sock:/var/run/docker.sock'] +
+    (['/var/run/docker.sock:/var/run/docker.sock'] if github_runner_mount_docker_socket else []) +
     (['/root/.android:/root/.android'] if github_runner_android else []) +
     ([github_runner_name ~ '-runner-data:/runner-data'] if github_runner_persist_config else [])
   }}

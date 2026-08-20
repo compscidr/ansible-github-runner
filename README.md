@@ -76,6 +76,7 @@ github_runner_env_file                      | whether to use an env file for pas
 github_runner_env_filename                  | the filename of the env file for passing extra environment variables into the container (defaults to ".env")
 github_runner_github_host                   | The GITHUB_HOST used for registering the runner (defaults to "github.com")
 github_runner_persist_config                | whether to persist runner configuration across container restarts using a named volume (defaults to true)
+github_runner_mount_docker_socket           | whether to mount the host's /var/run/docker.sock into the runner container; set to false for runners whose jobs never use docker to drop the root-equivalent privilege (defaults to true)
 github_runner_stop_timeout                  | seconds docker waits after SIGTERM before SIGKILL when stopping the runner container, e.g. while replacing it on an image bump (defaults to 10)
 github_runner_docker_timeout                | Docker API client timeout in seconds for the deploy task; stopping and removing a crash-looping runner can exceed the SDK's 60s default (defaults to 180)
 github_runner_drain_before_replace          | when a deploy is about to replace the runner container while the runner is executing a CI job, wait for the job to finish instead of destroying it (defaults to true)
