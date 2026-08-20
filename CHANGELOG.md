@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.6] - 2026-08-20
+### Added
+- `github_runner_mount_docker_socket` (default `true`): whether to mount the host's `/var/run/docker.sock` into the runner container. Set to `false` for runners whose CI jobs never use docker — it drops a root-equivalent privilege, and on a desktop host it guarantees the runner's jobs can't churn veth interfaces (each add/remove aborts in-flight Chrome requests on that host with `ERR_NETWORK_CHANGED`).
+- `no-docker-socket` molecule scenario verifying the runner converges without the socket bind.
+
 ## [0.1.5] - 2026-08-12
 ### Fixed
 - The deploy no longer replaces a runner container while its runner is mid-job (which destroyed the CI job: GitHub waits out the runner heartbeat ~10 min, then fails every remaining step). When a replace is imminent — new image digest or config change — and the existing runner is busy, the role now polls the GitHub runners API until the runner is idle before replacing, failing the deploy loudly on timeout instead of killing the job. The busy-check fails loudly on a paginated (>100 runners) listing, treats malformed/rate-limited API responses as still-waiting, and clamps the poll interval to >=1s.
