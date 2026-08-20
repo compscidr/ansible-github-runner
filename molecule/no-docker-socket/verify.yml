@@ -30,6 +30,8 @@
     - name: Verify docker socket is NOT mounted
       ansible.builtin.assert:
         that:
-          - runner_container.container.HostConfig.Binds | select('search', '/var/run/docker.sock') | list | length == 0
+          # default([], true) also covers Binds being None (e.g. every volume
+          # landing in Mounts instead): no binds at all still means no socket.
+          - runner_container.container.HostConfig.Binds | default([], true) | select('search', '/var/run/docker.sock') | list | length == 0
         fail_msg: "Docker socket should not be mounted with github_runner_mount_docker_socket: false"
         success_msg: "Docker socket correctly not mounted"
