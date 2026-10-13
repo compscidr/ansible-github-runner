@@ -43,12 +43,13 @@ github_runner_env: >-
 # depending on scope. The runners register as "<github_runner_name>-<random>"
 # (RUNNER_NAME_PREFIX), so the busy-check matches that prefix — and a bare
 # "<github_runner_name>" too, in case a future image drops the suffix.
-github_runner_api_runners_url: >-
+github_runner_api_runners_base: >-
   {{
     github_runner_api_base ~ '/' ~
     ('orgs/' ~ github_runner_org_name if github_runner_org else 'repos/' ~ github_runner_repo) ~
-    '/actions/runners?per_page=100'
+    '/actions/runners'
   }}
+github_runner_api_runners_url: "{{ github_runner_api_runners_base }}?per_page=100"
 github_runner_name_match: "^{{ github_runner_name | regex_escape }}(-|$)"
 
 # Poll interval clamped to >=1s so a consumer setting 0 (or a value that casts

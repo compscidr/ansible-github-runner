@@ -79,7 +79,7 @@ github_runner_persist_config                | whether to persist runner configur
 github_runner_mount_docker_socket           | whether to mount the host's /var/run/docker.sock into the runner container; set to false for runners whose jobs never use docker to drop the root-equivalent privilege (defaults to true)
 github_runner_stop_timeout                  | seconds docker waits after SIGTERM before SIGKILL when stopping the runner container, e.g. while replacing it on an image bump (defaults to 10)
 github_runner_docker_timeout                | Docker API client timeout in seconds for the deploy task; stopping and removing a crash-looping runner can exceed the SDK's 60s default (defaults to 180)
-github_runner_drain_before_replace          | when a deploy is about to replace the runner container while the runner is executing a CI job, wait for the job to finish instead of destroying it (defaults to true)
+github_runner_drain_before_replace          | when a deploy is about to replace the runner container, strip the runner's custom labels so it takes no new jobs and wait for any in-flight job to finish instead of destroying it (defaults to true). Needs a token that can manage the runner's labels
 github_runner_drain_timeout_minutes         | how long to wait for a busy runner to go idle before failing the deploy (defaults to 45)
 github_runner_drain_poll_seconds            | polling interval for the busy-check against the GitHub runners API (defaults to 30)
 github_runner_force_replace                 | emergency override: replace the container immediately even if a job is mid-flight (defaults to false)
