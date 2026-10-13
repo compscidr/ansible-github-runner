@@ -1,0 +1,19 @@
+# Puts back the custom labels the drain gate stripped (main.yml) when the
+# drain fails and the container is left in place. A 404 means the runner is
+# already gone, which is fine.
+- name: Restore the runner's custom labels
+  tags: github_runner
+  check_mode: false
+  ansible.builtin.uri:
+    url: "{{ github_runner_api_runners_base }}/{{ item.id }}/labels"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ github_runner_personal_access_token }}"
+      Accept: "application/vnd.github+json"
+    body_format: json
+    body:
+      labels: "{{ item.labels }}"
+    status_code: [200, 404]
+  loop: "{{ github_runner_stripped_labels | default([]) | selectattr('labels') | list }}"
+  # The Authorization header carries the PAT — keep it out of logs.
+  no_log: true

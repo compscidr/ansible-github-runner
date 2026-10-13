@@ -45,10 +45,14 @@
 
 # Drain-before-replace: replacing the container while its runner is executing
 # a CI job destroys the job (GitHub waits out the runner heartbeat ~10 min,
-# then fails every remaining step). When a replace is imminent and the
-# existing runner is busy, poll the runners API until it goes idle. A timeout
-# fails the deploy loudly — rerun with github_runner_force_replace=true to
-# replace anyway (killing the in-flight job) in an emergency.
+# then fails every remaining step). When a replace is imminent, strip the
+# runner's custom labels so no new job routes to it, then poll the runners API
+# until its in-flight job (if any) finishes. Without the strip a busy fleet
+# hands the runner a fresh job each time it frees up and the drain never
+# ends. The replacement registers with its configured labels; a failed drain
+# (no replace) puts the stripped labels back. A timeout fails the deploy loudly —
+# rerun with github_runner_force_replace=true to replace anyway (killing the
+# in-flight job) in an emergency.
 - name: Wait for the runner to finish its current job before replacing
   tags: github_runner
   check_mode: false
@@ -86,6 +90,32 @@
           drain gate before deploying to this account.
         quiet: true
 
+    # Only custom labels can be removed; the read-only ones (self-hosted, OS,
+    # arch) stay, so a job targeting just `self-hosted` could still land here.
+    - name: Record this runner's custom labels
+      ansible.builtin.set_fact:
+        github_runner_stripped_labels: >-
+          {{
+            github_runner_stripped_labels | default([]) + [{
+              'id': item.id,
+              'labels': item.labels | selectattr('type', 'equalto', 'custom') | map(attribute='name') | list
+            }]
+          }}
+      loop: "{{ github_runner_listing_probe.json.runners | selectattr('name', 'match', github_runner_name_match) | list }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Strip this runner's custom labels so it takes no new jobs
+      ansible.builtin.uri:
+        url: "{{ github_runner_api_runners_base }}/{{ item.id }}/labels"
+        method: DELETE
+        headers:
+          Authorization: "Bearer {{ github_runner_personal_access_token }}"
+          Accept: "application/vnd.github+json"
+      loop: "{{ github_runner_stripped_labels | default([]) | selectattr('labels') | list }}"
+      # The Authorization header carries the PAT — keep it out of logs.
+      no_log: true
+
     - name: Poll the runners API until this runner is idle
       ansible.builtin.uri:
         url: "{{ github_runner_api_runners_url }}"
@@ -109,6 +139,10 @@
         | selectattr('busy')
         | list | length == 0)
   rescue:
+    # Best effort: the deploy is failing anyway.
+    - name: Restore the stripped labels so the runner takes jobs again
+      ansible.builtin.include_tasks: restore_labels.yml
+
     - name: Fail with drain guidance
       ansible.builtin.fail:
         msg: >-

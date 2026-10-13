@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.7] - 2026-10-13
+### Fixed
+- The drain gate now actually drains. It used to only poll `busy`, so a runner on a busy fleet picked up a new queued job each time it finished one, and the deploy timed out after `github_runner_drain_timeout_minutes`. When a replace is imminent the role now strips the runner's custom labels first (no new job can route to it), waits out the in-flight job, then replaces it; the new container registers with its configured labels. A failed drain puts the stripped labels back. Read-only labels (`self-hosted`, OS, arch) can't be removed, so a job targeting only those can still land on a draining runner.
+
 ## [0.1.6] - 2026-08-20
 ### Added
 - `github_runner_mount_docker_socket` (default `true`): whether to mount the host's `/var/run/docker.sock` into the runner container. Set to `false` for runners whose CI jobs never use docker — it drops a root-equivalent privilege, and on a desktop host it guarantees the runner's jobs can't churn veth interfaces (each add/remove aborts in-flight Chrome requests on that host with `ERR_NETWORK_CHANGED`).
