@@ -47,19 +47,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.15'
-
-      - name: Cache pip packages
-        uses: actions/cache@v6
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
+      # Before setup-python: the cleanup wipes $AGENT_TOOLSDIRECTORY (the tool
+      # cache setup-python installs into), which used to leave `python` as the
+      # image's 3.12 with pip installing over the system packages.
       - name: Free up disk space
         run: |
           echo "Disk space before cleanup:"
@@ -71,6 +61,21 @@ jobs:
           sudo docker system prune -af --volumes
           echo "Disk space after cleanup:"
           df -h
+
+      # 3.14: ansible-core 2.21 fails to import on 3.15
+      # (module 'dataclasses' has no attribute '_is_type').
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Cache pip packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
