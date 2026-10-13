@@ -47,6 +47,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      # Before setup-python: the cleanup wipes $AGENT_TOOLSDIRECTORY (the tool
+      # cache setup-python installs into), which used to leave `python` as the
+      # image's 3.12 with pip installing over the system packages.
+      - name: Free up disk space
+        run: |
+          echo "Disk space before cleanup:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          sudo docker system prune -af --volumes
+          echo "Disk space after cleanup:"
+          df -h
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
@@ -59,18 +74,6 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-
-      - name: Free up disk space
-        run: |
-          echo "Disk space before cleanup:"
-          df -h
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          sudo docker system prune -af --volumes
-          echo "Disk space after cleanup:"
-          df -h
 
       - name: Install dependencies
         run: |
