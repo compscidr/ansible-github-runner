@@ -112,7 +112,7 @@
         headers:
           Authorization: "Bearer {{ github_runner_personal_access_token }}"
           Accept: "application/vnd.github+json"
-      loop: "{{ github_runner_stripped_labels | selectattr('labels') | list }}"
+      loop: "{{ github_runner_stripped_labels | default([]) | selectattr('labels') | list }}"
       # The Authorization header carries the PAT — keep it out of logs.
       no_log: true
 
