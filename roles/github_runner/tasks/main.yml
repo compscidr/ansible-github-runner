@@ -16,6 +16,10 @@
 # config-driven recreation (env, volumes, network mode, ...) without touching
 # anything. Together with the pull result this decides whether the drain
 # guard needs to run at all — an idempotent deploy skips straight through.
+# Only real container actions count: for a `name:tag@sha256:...` image the
+# module can't find the image by name, so check mode always predicts a
+# `pulled_image` action and reports changed. A new digest is already caught
+# by the pull result above.
 - name: Check whether the runner container would change
   tags: github_runner
   become: true
@@ -35,6 +39,9 @@
     env: "{{ github_runner_env }}"
     env_file: "{{ github_runner_env_filename if github_runner_env_file else omit }}"
   register: github_runner_container_plan
+  changed_when: >-
+    github_runner_container_plan.actions | default([])
+    | rejectattr('pulled_image', 'defined') | list | length > 0
 
 - name: Look up existing runner container
   tags: github_runner
