@@ -32,5 +32,9 @@ provisioner:
         github_runner_labels: "self-hosted,jvm"
         github_runner_java: true
         github_runner_mount_docker_socket: false
+        # Digest-pinned like Renovate pins it: the idempotence converge fails if
+        # the drain gate misreads this form as a change (it'd hit the API with
+        # the fake token).
+        github_runner_java_image: "compscidr/github-runner-android:latest@sha256:dd3d2e869a352efc027c07da44bab983d3b1878b612d5ff6b725315742eddd85"
 verifier:
   name: ansible

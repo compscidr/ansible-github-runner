@@ -3,6 +3,7 @@
 ## [0.1.7] - 2026-10-13
 ### Fixed
 - The drain gate now actually drains. It used to only poll `busy`, so a runner on a busy fleet picked up a new queued job each time it finished one, and the deploy timed out after `github_runner_drain_timeout_minutes`. When a replace is imminent the role now strips the runner's custom labels first (no new job can route to it), waits out the in-flight job, then replaces it; the new container registers with its configured labels. A failed drain puts the stripped labels back. Read-only labels (`self-hosted`, OS, arch) can't be removed, so a job targeting only those can still land on a draining runner.
+- The drain gate no longer runs on every deploy for a digest-pinned image (`name:tag@sha256:...`, the form Renovate pins). `community.docker.docker_container` can't find such an image by name, so the check-mode plan always predicted a `pulled_image` action and reported changed, and every deploy drained every runner even when the real deploy changed nothing. The plan now counts only container actions (stop/remove/create); a new digest is still caught by the explicit pull.
 
 ## [0.1.6] - 2026-08-20
 ### Added
