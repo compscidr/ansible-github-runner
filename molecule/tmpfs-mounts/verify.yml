@@ -1,0 +1,39 @@
+---
+- name: Verify runner with tmpfs mounts
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Read the runner container
+      community.docker.docker_container_info:
+        name: "{{ github_runner_name }}"
+      register: runner_container
+
+    - name: Verify the runner is running with its tmpfs mounts
+      ansible.builtin.assert:
+        that:
+          - runner_container.exists
+          - runner_container.container.State.Running
+          - runner_tmpfs.get('/_work') == 'rw,exec,size=64m'
+          - runner_tmpfs.get('/root/.gradle') == 'rw,exec,size=64m'
+      vars:
+        runner_tmpfs: "{{ runner_container.container.HostConfig.Tmpfs | default({}, true) }}"
+
+    # Rolling back has to clear the mounts, and the docker module doesn't do
+    # that unless the role compares them strictly.
+    - name: Deploy again without tmpfs mounts
+      ansible.builtin.include_role:
+        name: github_runner
+      vars:
+        github_runner_tmpfs: []
+        github_runner_drain_before_replace: false
+
+    - name: Read the redeployed runner container
+      community.docker.docker_container_info:
+        name: "{{ github_runner_name }}"
+      register: redeployed_container
+
+    - name: Verify the tmpfs mounts are gone
+      ansible.builtin.assert:
+        that:
+          - redeployed_container.container.HostConfig.Tmpfs | default({}, true) | length == 0

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.8] - 2026-11-04
+### Added
+- `github_runner_tmpfs` (default `[]`): in-memory mounts for the runner container, to keep rebuildable job data off slow disks.
+- `tmpfs-mounts` molecule scenario verifying the mounts are applied and the deploy stays idempotent.
+
 ## [0.1.7] - 2026-10-13
 ### Fixed
 - The drain gate now actually drains. It used to only poll `busy`, so a runner on a busy fleet picked up a new queued job each time it finished one, and the deploy timed out after `github_runner_drain_timeout_minutes`. When a replace is imminent the role now strips the runner's custom labels first (no new job can route to it), waits out the in-flight job, then replaces it; the new container registers with its configured labels. A failed drain puts the stripped labels back. Read-only labels (`self-hosted`, OS, arch) can't be removed, so a job targeting only those can still land on a draining runner.

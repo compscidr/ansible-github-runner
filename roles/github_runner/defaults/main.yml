@@ -31,6 +31,15 @@ github_runner_network_mode: default
 # Chrome requests on that host with ERR_NETWORK_CHANGED).
 github_runner_mount_docker_socket: true
 
+# In-memory mounts for the runner container, in docker's "path:options" form,
+# to keep rebuildable job data off slow disks. For example:
+#   - /_work:rw,exec,size=10g
+# Set `exec`, since docker's tmpfs default is noexec and would stop jobs running
+# gradlew or native modules. Contents are lost whenever the container stops, and
+# a mount hides anything the image has at that path. Data held in a mount uses
+# host RAM and swap, and a full mount fails the job, so set `size` to fit the host.
+github_runner_tmpfs: []
+
 github_runner_github_host: "github.com"
 
 github_runner_persist_config: true
