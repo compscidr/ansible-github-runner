@@ -31,6 +31,7 @@
     devices: "{{ ['/dev/bus/usb:/dev/bus/usb:rwm'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
     device_cgroup_rules: "{{ ['c 189:* rmw'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
     volumes: "{{ github_runner_volumes }}"
+    tmpfs: "{{ github_runner_tmpfs if github_runner_tmpfs else omit }}"
     restart_policy: unless-stopped
     stop_timeout: "{{ github_runner_stop_timeout }}"
     timeout: "{{ github_runner_docker_timeout }}"
@@ -174,6 +175,7 @@
     devices: "{{ ['/dev/bus/usb:/dev/bus/usb:rwm'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
     device_cgroup_rules: "{{ ['c 189:* rmw'] if (github_runner_java and github_runner_java_mount_usb) else omit }}"
     volumes: "{{ github_runner_volumes }}"
+    tmpfs: "{{ github_runner_tmpfs if github_runner_tmpfs else omit }}"
     restart_policy: unless-stopped
     # Replacing an existing container (image bump) stops and removes it first.
     # A crash-looping or wedged runner can take well over the Docker SDK's

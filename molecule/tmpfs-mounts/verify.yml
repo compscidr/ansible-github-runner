@@ -1,0 +1,18 @@
+---
+- name: Verify runner with tmpfs mounts
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Read the runner container
+      community.docker.docker_container_info:
+        name: "{{ github_runner_name }}"
+      register: runner_container
+
+    - name: Verify the runner is running with its tmpfs mounts
+      ansible.builtin.assert:
+        that:
+          - runner_container.exists
+          - runner_container.container.State.Running
+          - runner_container.container.HostConfig.Tmpfs['/_work'] == 'rw,exec,size=64m'
+          - runner_container.container.HostConfig.Tmpfs['/root/.gradle'] == 'rw,exec,size=64m'

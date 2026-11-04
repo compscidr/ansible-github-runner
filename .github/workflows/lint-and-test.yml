@@ -40,6 +40,7 @@ jobs:
           - android-runner-host
           - org-runner
           - no-docker-socket
+          - tmpfs-mounts
       fail-fast: false
       max-parallel: 1
 
