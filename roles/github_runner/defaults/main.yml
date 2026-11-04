@@ -36,7 +36,8 @@ github_runner_mount_docker_socket: true
 #   - /_work:rw,exec,size=10g
 # Set `exec`, since docker's tmpfs default is noexec and would stop jobs running
 # gradlew or native modules. Contents are lost whenever the container stops, and
-# a mount hides anything the image has at that path.
+# a mount hides anything the image has at that path. Data held in a mount uses
+# host RAM and swap, and a full mount fails the job, so set `size` to fit the host.
 github_runner_tmpfs: []
 
 github_runner_github_host: "github.com"
