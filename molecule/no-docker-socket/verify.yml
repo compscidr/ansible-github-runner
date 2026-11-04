@@ -1,7 +1,7 @@
 ---
 - name: Verify runner without docker socket
   hosts: all
-  gather_facts: false
+  gather_facts: true
   become: true
   tasks:
     - name: Check if GitHub runner container is running
@@ -35,3 +35,39 @@
           - runner_container.container.HostConfig.Binds | default([], true) | select('search', '/var/run/docker.sock') | list | length == 0
         fail_msg: "Docker socket should not be mounted with github_runner_mount_docker_socket: false"
         success_msg: "Docker socket correctly not mounted"
+
+    # A runner that already has the socket has to lose it on the next deploy, and
+    # the docker module doesn't do that unless the role compares volumes strictly.
+    - name: Deploy with the docker socket
+      ansible.builtin.include_role:
+        name: github_runner
+      vars:
+        github_runner_mount_docker_socket: true
+        github_runner_drain_before_replace: false
+
+    - name: Read the runner with the docker socket
+      community.docker.docker_container_info:
+        name: "{{ github_runner_name }}"
+      register: socket_container
+
+    - name: Verify docker socket is mounted
+      ansible.builtin.assert:
+        that:
+          - socket_container.container.HostConfig.Binds | default([], true) | select('search', '/var/run/docker.sock') | list | length == 1
+
+    - name: Deploy again without the docker socket
+      ansible.builtin.include_role:
+        name: github_runner
+      vars:
+        github_runner_mount_docker_socket: false
+        github_runner_drain_before_replace: false
+
+    - name: Read the redeployed runner
+      community.docker.docker_container_info:
+        name: "{{ github_runner_name }}"
+      register: redeployed_container
+
+    - name: Verify docker socket was removed from the existing runner
+      ansible.builtin.assert:
+        that:
+          - redeployed_container.container.HostConfig.Binds | default([], true) | select('search', '/var/run/docker.sock') | list | length == 0

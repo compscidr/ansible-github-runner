@@ -35,6 +35,7 @@
     # Without strict, removing an entry leaves the mount on the container.
     comparisons:
       tmpfs: strict
+      volumes: strict
     restart_policy: unless-stopped
     stop_timeout: "{{ github_runner_stop_timeout }}"
     timeout: "{{ github_runner_docker_timeout }}"
@@ -182,6 +183,7 @@
     # Without strict, removing an entry leaves the mount on the container.
     comparisons:
       tmpfs: strict
+      volumes: strict
     restart_policy: unless-stopped
     # Replacing an existing container (image bump) stops and removes it first.
     # A crash-looping or wedged runner can take well over the Docker SDK's
