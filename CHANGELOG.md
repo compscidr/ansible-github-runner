@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.9] - 2026-11-04
+### Fixed
+- `github_runner_mount_docker_socket: false` now removes the socket from an existing runner. The docker module ignored removed volumes, so the mount stayed until the container was next replaced for another reason. Existing runners with stale mounts are replaced on their next deploy.
+
 ## [0.1.8] - 2026-11-04
 ### Added
 - `github_runner_tmpfs` (default `[]`): in-memory mounts for the runner container, to keep rebuildable job data off slow disks.
